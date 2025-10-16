@@ -5,6 +5,7 @@ Project for a study app to run on local machines
 **Python 3.13.9**
 
 **Kivy 2.3.1**
+[Docs](https://kivy.org/doc/stable/gettingstarted/intro.html)
 Used for frontend
 Install using `pip install "kivy[base]" kivy_examples`
 N.B. Kivy is only supported up through Python 3.13
