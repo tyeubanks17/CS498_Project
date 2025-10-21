@@ -49,6 +49,16 @@ The `master` branch should always have a working version of our code on it. Inte
 If you're not making code changes (e.g. just updating documentation), you can commit straight to `master`, but if it touches another person's work, be sure to get approval first. 
 2) Keep your work in your own branch.
 Each feature should get its own branch
+3) Each file should begin with a docstring
+File docstrings should list: 
+    1. the filename
+    2. the purpose of the file
+    3. the history of the file (creation date, revisions, etc.)
+4) Each method should have a docstring
+Method docstrings should list: 
+    1. the purpose of the method
+    2. the arguments of the method (including type and description)
+    3. the return type/values of the method
 
 ## Naming conventions
 https://peps.python.org/pep-0008/#prescriptive-naming-conventions
