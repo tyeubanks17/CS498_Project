@@ -38,3 +38,14 @@
 
 ## Other tasks
 - Styling & graphic design
+
+---
+
+# SDLC Rules
+The set of best practices to follow when contributing to the project. These are mostly just to keep people from stepping on each other's toes while developing.
+
+1) Never commit directly to master.
+The `master` branch should always have a working version of our code on it. Integration should be taken care of in the `staging` branch. 
+If you're not making code changes (e.g. just updating documentation), you can commit straight to `master`, but if it touches another person's work, be sure to get approval first. 
+2) Keep your work in your own branch.
+Each feature should get its own branch
