@@ -49,3 +49,11 @@ The `master` branch should always have a working version of our code on it. Inte
 If you're not making code changes (e.g. just updating documentation), you can commit straight to `master`, but if it touches another person's work, be sure to get approval first. 
 2) Keep your work in your own branch.
 Each feature should get its own branch
+
+## Naming conventions
+https://peps.python.org/pep-0008/#prescriptive-naming-conventions
+Just to keep these consistent.
+**Module file names**: short, lowercase, and all one word
+**Class names**: CapWords convention
+**Function & variable names**: lowercase, separated by underscores
+**Constants**: all uppercase, separated by underscores
