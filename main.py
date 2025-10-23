@@ -7,6 +7,7 @@ History:
 22 Oct 2025 - Created, add terrible mock menu
 '''
 
+from kivy.lang import Builder
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -24,6 +25,7 @@ class StudyApp(App):
     StudyApp kivy.app inherited class
     '''
     def build(self): 
+        Builder.load_file('global-styles.kv')
         sm = ScreenManager()
         sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(EditScreen(name='editSet'))
