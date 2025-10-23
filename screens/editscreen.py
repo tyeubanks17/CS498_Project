@@ -17,6 +17,22 @@ from kivy.properties import StringProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 
+def find_ancestor_of_type(child, ances_type): 
+    '''
+    Helper method to find nearest ancestor of given type
+    '''
+    MAX_COUNT = 100 # Limit number of tree levels to check
+    count = 0
+
+    ancestor = child.parent
+    while not isinstance(ancestor, ances_type):
+        ancestor = ancestor.parent
+        if count > MAX_COUNT:
+            raise NameError(f"Ancestor of type {ances_type} not found")
+        else: 
+            count += 1
+    return ancestor
+
 class TermTextInput(TextInput):
     '''
     Custom TextInput class to allow hijacking tab
@@ -30,14 +46,10 @@ class TermTextInput(TextInput):
         # Test whether element is visible
         left,bot = self.to_window(self.x, self.y)
         right,top = self.to_window(self.right, self.top)
-        print(left, bot, right, top)
         SCR_PAD = dp(20)
-        print(SCR_PAD)
         if bot < 0 or top > Window.height - SCR_PAD:
             # Find ScrollView, scroll to self
-            sv = self.parent
-            while not isinstance(sv, ScrollView):
-                sv = sv.parent
+            sv = find_ancestor_of_type(self, ScrollView)
             sv.scroll_to(self)
 
 
@@ -47,9 +59,7 @@ class TermTextInput(TextInput):
             # If last term, find EditScreen instance
             # and call add_card()
             if not self.focus_next: 
-                es = self.parent
-                while not isinstance(es, EditScreen):
-                    es = es.parent
+                es = find_ancestor_of_type(self, EditScreen)
                 es.add_card()
         
         # Call original method
