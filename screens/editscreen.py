@@ -5,6 +5,7 @@ Definition for set creation/editing screen
 
 History: 
 22 Oct 2025 - Created
+23 Oct 2025 - Add term/definition fields, tab navigation
 '''
 
 from kivy.uix.screenmanager import Screen
