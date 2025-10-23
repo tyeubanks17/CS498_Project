@@ -7,10 +7,9 @@ History:
 22 Oct 2025 - Created, add terrible mock menu
 '''
 
-from kivy.lang import Builder
 from kivy.app import App
-from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.lang import Builder
 
 from screens.editscreen import EditScreen
 
