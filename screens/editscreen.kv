@@ -8,25 +8,29 @@
 <MenuBtn@Button>:
     size_hint: None, 0.8
 
-<TermWidget>:
-    # BoxLayout:
+<TermWidget>: # @BoxLayout
     orientation: 'horizontal'
     size_hint_y: None
     height: self.minimum_height
     spacing: '20dp'
 
-    TextInput: 
+    TermTextInput: 
+        id: termfield
         text: 'Term goes here'
         size_hint_y: None
         height: self.font_size + dp(15)
         pos_hint: { 'top': 1 }
         multiline: False
+        focus_next: defnfield
+        write_tab: False
 
-    TextInput: 
+    TermTextInput: 
+        id: defnfield
         text: 'Definition goes here'
         size_hint_y: None
         height: self.font_size*3 + dp(15)
         multiline: True
+        write_tab: False
 
 <EditScreen>:
     BoxLayout:
@@ -34,6 +38,7 @@
         padding: '10dp'
 
         FloatLayout: 
+            id: menubar
             orientation: 'horizontal'
             size_hint_y: None
             height: '50dp'
@@ -47,6 +52,7 @@
                     root.manager.current = 'menu'
 
             BoxLayout: 
+                id: menubarright
                 orientation: 'horizontal'
                 pos_hint: { 'right': 1, 'center_y': 0.6 }
                 size_hint_x: None
@@ -90,6 +96,13 @@
                     text: 'Add a card'
                     size_hint: None, None
                     height: self.font_size + dp(25)
-                    padding: dp(5)
+                    padding: dp(20)
                     pos_hint: { 'center_x': 0.5}
                     on_release: root.add_card()
+
+                Button: 
+                    text: 'Save'
+                    size_hint: None, None
+                    height: self.font_size + dp(25)
+                    padding: dp(20)
+                    pos_hint: { 'right': 1 }

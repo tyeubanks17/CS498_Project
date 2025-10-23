@@ -10,8 +10,50 @@ History:
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
 from kivy.properties import StringProperty
+from kivy.metrics import dp
 from kivy.lang import Builder
+
+class TermTextInput(TextInput):
+    '''
+    Custom TextInput class to allow hijacking tab
+    navigation to add new card
+    '''
+    # on_focus = root.on_input_focus(self)
+    def on_focus(self, instance, value):
+        '''
+        Scroll to text box when focused
+        '''
+        # Test whether element is visible
+        left,bot = self.to_window(self.x, self.y)
+        right,top = self.to_window(self.right, self.top)
+        print(left, bot, right, top)
+        SCR_PAD = dp(20)
+        print(SCR_PAD)
+        if bot < 0 or top > Window.height - SCR_PAD:
+            # Find ScrollView, scroll to self
+            sv = self.parent
+            while not isinstance(sv, ScrollView):
+                sv = sv.parent
+            sv.scroll_to(self)
+
+
+    def keyboard_on_key_down(self, window, keycode, text, modifiers):
+        # Tab keycode: (9, 'tab')
+        if keycode == (9, 'tab'):
+            # If last term, find EditScreen instance
+            # and call add_card()
+            if not self.focus_next: 
+                es = self.parent
+                while not isinstance(es, EditScreen):
+                    es = es.parent
+                es.add_card()
+        
+        # Call original method
+        super().keyboard_on_key_down(window, keycode, text, modifiers)
 
 class TermWidget(BoxLayout):
     '''
@@ -28,10 +70,8 @@ class EditScreen(Screen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Add initial term objects on load
-        self.terms.append(TermWidget())
-        self.terms.append(TermWidget())
-        for tw in self.terms: 
-            self.ids['termlayout'].add_widget(tw)
+        for _ in range(3):
+            self.add_card()
 
     def on_pre_enter(self):
         # To execute on screen load
@@ -42,5 +82,8 @@ class EditScreen(Screen):
         '''
         Add a blank flashcard to the editor interface
         '''
-        self.terms.append(TermWidget())
+        tw = TermWidget()
+        if len(self.terms) >= 1:
+            self.terms[-1].ids['defnfield'].focus_next = tw.ids['termfield']
+        self.terms.append(tw)
         self.ids['termlayout'].add_widget(self.terms[-1])
