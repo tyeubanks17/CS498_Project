@@ -9,27 +9,23 @@
     size_hint: None, 0.8
 
 <TermWidget>:
-    # GridLayout:
-    # cols: 2  # Add more columns later to account for drag-and-drop icon, insert btn, etc.
     # BoxLayout:
-    orientation: horizontal
+    orientation: 'horizontal'
     size_hint_y: None
     height: self.minimum_height
     spacing: '20dp'
-    # id: root.idStr  # Get idStr from Python instantiation
 
     TextInput: 
-        # id: root.parent.id + '-term'
         text: 'Term goes here'
         size_hint_y: None
-        height: '100dp'
+        height: self.font_size + dp(15)
+        pos_hint: { 'top': 1 }
         multiline: False
 
     TextInput: 
-        # id: root.parent.id + '-defn'
         text: 'Definition goes here'
-        size_hint_x: None
-        height: '200dp'
+        size_hint_y: None
+        height: self.font_size*3 + dp(15)
         multiline: True
 
 <EditScreen>:
@@ -76,17 +72,12 @@
             doScrollX: False
             doScrollY: True
 
-            BoxLayout: 
-                # cols: 1
+            BoxLayout:
+                id: content
                 orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
                 spacing: '20dp'
-
-                Button: 
-                    size_hint_y: None
-                    text: 'Create a set'
-                    height: '350dp'
 
                 BoxLayout: 
                     id: termlayout
@@ -95,15 +86,10 @@
                     height: self.minimum_height
                     spacing: '20dp'
 
-                    Label: 
-                        text: 'Terms go here!'
-
                 Button: 
-                    size_hint_y: None
-                    text: 'Page button 2'
-                    height: '500dp'
-
-                Button: 
-                    size_hint_y: None
-                    text: 'Page button 3'
-                    height: '500dp'
+                    text: 'Add a card'
+                    size_hint: None, None
+                    height: self.font_size + dp(25)
+                    padding: dp(5)
+                    pos_hint: { 'center_x': 0.5}
+                    on_release: root.add_card()
