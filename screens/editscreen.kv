@@ -1,30 +1,72 @@
 #:kivy 2.3
 # Definition for EditScreen
 
+<Button>:
+    width: self.texture_size[0]
+    padding: '20dp'
+
+<MenuBtn@Button>:
+    size_hint: None, 0.8
+
+<TermWidget>:
+    # GridLayout:
+    # cols: 2  # Add more columns later to account for drag-and-drop icon, insert btn, etc.
+    # BoxLayout:
+    orientation: horizontal
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: '20dp'
+    # id: root.idStr  # Get idStr from Python instantiation
+
+    TextInput: 
+        # id: root.parent.id + '-term'
+        text: 'Term goes here'
+        size_hint_y: None
+        height: '100dp'
+        multiline: False
+
+    TextInput: 
+        # id: root.parent.id + '-defn'
+        text: 'Definition goes here'
+        size_hint_x: None
+        height: '200dp'
+        multiline: True
+
 <EditScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 20
+        padding: '10dp'
 
         FloatLayout: 
             orientation: 'horizontal'
             size_hint_y: None
             height: '50dp'
+            padding: '20dp'
 
-            Button: 
+            MenuBtn: 
                 text: 'Back to menu'
-                size_hint_x: None
-                width: self.texture_size[0]
-                padding: '20dp'
-                halign: 'left'
                 pos_hint: { 'x': 0, 'center_y': 0.5}
                 on_release: 
                     root.manager.transition.direction = 'right'
                     root.manager.current = 'menu'
 
+            BoxLayout: 
+                orientation: 'horizontal'
+                pos_hint: { 'right': 1, 'center_y': 0.6 }
+                size_hint_x: None
+                width: self.minimum_width
+                spacing: '10dp'
+
+                MenuBtn: 
+                    text: 'Import'
+
+                MenuBtn: 
+                    text: 'Save'
             
             Label: 
                 text: 'Edit a set'
+                bold: True
+                font_size: '24dp'
                 size_hint_x: None
                 width: self.texture_size[0]
                 padding: '20dp'
@@ -34,16 +76,27 @@
             doScrollX: False
             doScrollY: True
 
-            GridLayout: 
-                cols: 1
+            BoxLayout: 
+                # cols: 1
+                orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
+                spacing: '20dp'
 
                 Button: 
                     size_hint_y: None
                     text: 'Create a set'
-                    height: '500dp'
-                    on_release: root.manager.current = 'editSet'
+                    height: '350dp'
+
+                BoxLayout: 
+                    id: termlayout
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '20dp'
+
+                    Label: 
+                        text: 'Terms go here!'
 
                 Button: 
                     size_hint_y: None
