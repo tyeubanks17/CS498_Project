@@ -11,8 +11,8 @@
 - CSV, match Quizlet formatting
 - Create Python class with file reader/writer method
 - Find/create example study set(s)
-**Priority #1: Global handler**
-- Overall Kivy instance for handling everything
+- Must be able to handle special chars
+
 **Priority #2: Look-and-feel conventions**
 - Need consistent, documented look & feel
 - Have collaborative meeting to establish look-and-feel
@@ -23,13 +23,17 @@
     - General look-and-feel
 
 ## Task Notes
+### Frontend/main menu
+- Main menu screen for accessing all other screens/modes & browsing study sets
+- Page for displaying study set, selecting a study mode
+
 ### Set editor
 - Inserting/removing/reordering terms
 - Tab navigation
 - Inputting special chars
 - Backend edit methods: insert/remove term, reorder term, edit term in-place
 - Handling special chars: backend storage, frontend interface
-- Highlight duplicate terms/definitions?
+  
 ### Study modes
 - Handling user input (tab ordering, buttons, special chars)
 - Designing modes/games
@@ -53,14 +57,30 @@ The set of best practices to follow when contributing to the project. These are 
 
 1) Never commit directly to master.
 The `master` branch should always have a working version of our code on it. Integration should be taken care of in the `staging` branch. 
-If you're not making code changes (e.g. just updating documentation), you can commit straight to `master`, but if it touches another person's work, be sure to get approval first. 
-2) Keep your work in your own branch.
+If you're not making code changes (e.g. just updating documentation), you can commit straight to `master`, but if it touches another person's work, be sure to get approval first.
+
+3) Keep your work in your own branch.
 Each feature should get its own branch
 
+5) Each file should begin with a docstring
+File docstrings should list: 
+    1. the filename
+    2. the purpose of the file
+    3. the history of the file (creation date, revisions, etc.)
+
+6) Each method should have a docstring
+Method docstrings should list: 
+    1. the purpose of the method
+    2. the arguments of the method (including type and description)
+    3. the return type/values of the method
+
 ## Naming conventions
+
 https://peps.python.org/pep-0008/#prescriptive-naming-conventions
+
 Just to keep these consistent.
-**Module file names**: short, lowercase, and all one word
-**Class names**: CapWords convention
-**Function & variable names**: lowercase, separated by underscores
-**Constants**: all uppercase, separated by underscores
+
+- **Module file names**: short, lowercase, and all one word
+- **Class names**: CapWords convention
+- **Function & variable names**: lowercase, separated by underscores
+- **Constants**: all uppercase, separated by underscores
