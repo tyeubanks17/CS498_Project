@@ -1,0 +1,41 @@
+#:kivy 2.3
+# Layout file for main controller
+
+<MenuScreen>:
+    BoxLayout: 
+        orientation: 'vertical'
+
+        Label: 
+            text: 'Main Menu'
+            bold: True
+            font_size: '24dp'
+            size_hint_y: None
+            height: '50dp'
+
+        ScrollView: 
+            doScrollX: False
+            doScrollY: True
+
+            GridLayout:
+                cols: 1
+                spacing: '20dp'
+                size_hint_y: None
+                height: self.minimum_height
+
+                Button: 
+                    size_hint_y: None
+                    text: 'Create a set'
+                    height: '500dp'
+                    on_release: 
+                        root.manager.transition.direction = 'left'
+                        root.manager.current = 'editSet'
+
+                Button: 
+                    size_hint_y: None
+                    text: 'Page button 2'
+                    height: '500dp'
+
+                Button: 
+                    size_hint_y: None
+                    text: 'Page button 3'
+                    height: '500dp'

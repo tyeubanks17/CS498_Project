@@ -1,0 +1,56 @@
+#:kivy 2.3
+# Definition for EditScreen
+
+<EditScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+
+        FloatLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '50dp'
+
+            Button: 
+                text: 'Back to menu'
+                size_hint_x: None
+                width: self.texture_size[0]
+                padding: '20dp'
+                halign: 'left'
+                pos_hint: { 'x': 0, 'center_y': 0.5}
+                on_release: 
+                    root.manager.transition.direction = 'right'
+                    root.manager.current = 'menu'
+
+            
+            Label: 
+                text: 'Edit a set'
+                size_hint_x: None
+                width: self.texture_size[0]
+                padding: '20dp'
+                pos_hint: { 'center_x': 0.5, 'center_y': 0.5}
+
+        ScrollView: 
+            doScrollX: False
+            doScrollY: True
+
+            GridLayout: 
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+
+                Button: 
+                    size_hint_y: None
+                    text: 'Create a set'
+                    height: '500dp'
+                    on_release: root.manager.current = 'editSet'
+
+                Button: 
+                    size_hint_y: None
+                    text: 'Page button 2'
+                    height: '500dp'
+
+                Button: 
+                    size_hint_y: None
+                    text: 'Page button 3'
+                    height: '500dp'

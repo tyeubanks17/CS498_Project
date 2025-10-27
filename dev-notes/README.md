@@ -7,11 +7,12 @@
 - Performance metrics & tracking - **Ty**
 
 ## Top Priorities - general
-**Priority #1: Study set data structure**
+**DONE: Study set data structure**
 - CSV, match Quizlet formatting
 - Create Python class with file reader/writer method
 - Find/create example study set(s)
-- Must be able to handle special chars
+**Priority #1: Global handler**
+- Overall Kivy instance for handling everything
 **Priority #2: Look-and-feel conventions**
 - Need consistent, documented look & feel
 - Have collaborative meeting to establish look-and-feel
