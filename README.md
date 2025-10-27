@@ -6,6 +6,7 @@ Project for a study app to run on local machines
 
 **Kivy 2.3.1**
 [Docs](https://kivy.org/doc/stable/gettingstarted/intro.html)
+[Other tutorials](https://inclem.net/pages/kivy-crash-course/)
 Used for frontend
 Install using `pip install "kivy[base]" kivy_examples`
 Demo at `.venv/share/kivy-examples/demo/showcase/main.py`
