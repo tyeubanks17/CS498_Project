@@ -29,12 +29,18 @@
 - Inputting special chars
 - Backend edit methods: insert/remove term, reorder term, edit term in-place
 - Handling special chars: backend storage, frontend interface
+- Highlight duplicate terms/definitions?
 ### Study modes
 - Handling user input (tab ordering, buttons, special chars)
 - Designing modes/games
+    - Allow studying term-first, definition-first, etc.
+    - Handling ambiguity (some might have identical terms or definitions - should accept both)
 ### Set browser
 - What does this look like? Organization options?
+- Should entries be their own class?
 - Set import/export: backend method + frontend interface
+    - Allow pasting CSV text directly into GUI (along with file upload)
+    - Allow importing from other file formats: .xlsx
 ### Performance metrics & tracking
 
 ## Other tasks
