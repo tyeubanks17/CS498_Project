@@ -75,13 +75,16 @@ class TermWidget(BoxLayout):
     pass
 
 class EditScreen(Screen):
+    NUM_TERMS_ON_LOAD = 2
+
     Builder.load_file("./screens/editscreen.kv")
+
     terms = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Add initial term objects on load
-        for _ in range(3):
+        for _ in range(self.NUM_TERMS_ON_LOAD):
             self.add_card()
 
     def on_pre_enter(self):
@@ -96,5 +99,7 @@ class EditScreen(Screen):
         tw = TermWidget()
         if len(self.terms) >= 1:
             self.terms[-1].ids['defnfield'].focus_next = tw.ids['termfield']
+        else: 
+            self.ids['descfield'].focus_next = tw.ids['termfield']
         self.terms.append(tw)
         self.ids['termlayout'].add_widget(self.terms[-1])

@@ -16,7 +16,6 @@
 
     TermTextInput: 
         id: termfield
-        text: 'Term goes here'
         size_hint_y: None
         height: self.font_size + dp(15)
         pos_hint: { 'top': 1 }
@@ -26,7 +25,6 @@
 
     TermTextInput: 
         id: defnfield
-        text: 'Definition goes here'
         size_hint_y: None
         height: self.font_size*3 + dp(15)
         multiline: True
@@ -84,6 +82,65 @@
                 size_hint_y: None
                 height: self.minimum_height
                 spacing: '20dp'
+
+                Widget: 
+                    id: topspacer
+                    size_hint_y: None
+                    height: '10dp'
+
+                GridLayout: 
+                    id: topmatter
+                    cols: 2
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '20dp'
+
+                    BoxLayout: 
+                        id: titledesc
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: '15dp'
+
+                        Label: 
+                            text: 'Title:'
+                            text_size: self.size
+                            halign: 'left'
+                        TextInput: 
+                            id: titlefield
+                            size_hint_y: None
+                            height: self.font_size + dp(15)
+                            multiline: False
+                            write_tab: False
+                            focus_next: descfield
+                        Label: 
+                            text: 'Description:'
+                            text_size: self.size
+                            halign: 'left'
+                        TextInput: 
+                            id: descfield
+                            size_hint_y: None
+                            height: self.font_size * 3 + dp(15)
+                            multiline: True
+                            write_tab: False
+
+                    Label: 
+                        text: 'Properties:'
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'top'
+
+                BoxLayout: 
+                    id: termheaders
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '20dp'
+
+                    Label:
+                        text: 'Term'
+                    Label: 
+                        text: 'Definition'
 
                 BoxLayout: 
                     id: termlayout
