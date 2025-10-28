@@ -107,6 +107,7 @@ class EditScreen(Screen):
     def add_card(self): 
         '''
         Add a blank flashcard to the editor interface
+        Inserts at end of termlayout
         '''
         tw = TermWidget()
         terms = self.get_terms()
@@ -114,6 +115,7 @@ class EditScreen(Screen):
             terms[0].ids['defnfield'].focus_next = tw.ids['termfield']
         else: 
             self.ids['descfield'].focus_next = tw.ids['termfield']
+        tw.ids['idxfield'].text = len(terms)
         self.ids['termlayout'].add_widget(tw)
 
     def delete_card(self, card: TermWidget):
@@ -137,6 +139,7 @@ class EditScreen(Screen):
             self.add_card()
             self.ids['descfield'].focus_next = terms[-1].ids['termfield']
         self.ids['termlayout'].remove_widget(card)
+        self.do_term_indexing()
 
     def insert_card(self, card: TermWidget, index_: int):
         '''
@@ -157,6 +160,7 @@ class EditScreen(Screen):
             if index_ < len(terms)-1:
                 card.ids['defnfield'].focus_next = terms[index_+1].ids['termfield']
         self.do_tab_ordering()
+        self.do_term_indexing()
         
     def move_card_up(self, card: TermWidget):
         '''
@@ -181,6 +185,9 @@ class EditScreen(Screen):
         else: 
             terms[idx].ids['defnfield'].focus_next = None
         terms[idx+1].focus = True
+        # Update term indices
+        terms[idx+1].ids['idxfield'].text = len(terms) - (idx+1)
+        terms[idx].ids['idxfield'].text = len(terms) - idx
 
     def move_card_down(self, card: TermWidget):
         '''
@@ -205,6 +212,9 @@ class EditScreen(Screen):
         else: 
             terms[idx-1].ids['defnfield'].focus_next = None
         terms[idx-1].focus = True
+        # Update term indexing
+        terms[idx-1].ids['idxfield'].text = len(terms) - (idx-1)
+        terms[idx].ids['idxfield'].text = len(terms) - idx
 
     def move_card_to_index(self, card: TermWidget, index: int): 
         '''
@@ -219,6 +229,7 @@ class EditScreen(Screen):
         else: 
             self.insert_card(card, index)
         self.do_tab_ordering()
+        self.do_term_indexing()
 
     def do_tab_ordering(self):
         '''
@@ -234,7 +245,12 @@ class EditScreen(Screen):
         for idx in range(len(terms)):
             if idx < len(terms)-1: 
                 terms[idx+1].ids['defnfield'].focus_next = terms[idx].ids['termfield']
-        terms[0].idx['defnfield'].focus_next = None
-            
-            
-            
+        terms[0].ids['defnfield'].focus_next = None
+
+    def do_term_indexing(self): 
+        '''
+        Update index fields for all terms
+        '''
+        terms = self.get_terms()
+        for idx in range(len(terms)):
+            terms[idx].ids['idxfield'].text = len(terms) - idx
