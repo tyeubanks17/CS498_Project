@@ -132,3 +132,26 @@ class EditScreen(Screen):
             self.add_card()
             self.ids['descfield'].focus_next = terms[-1].ids['termfield']
         self.ids['termlayout'].remove_widget(card)
+    def move_card_up(self, card: TermWidget):
+        
+        '''
+        Move card up in widget tree
+        '''
+        terms = self.get_terms()
+        idx = terms.index(card)
+        # If last card, do nothing
+        if idx < len(terms)-1: 
+            self.delete_card(card)
+            self.ids['termlayout'].add_widget(card, index=idx+1)
+            
+    def move_card_down(self, card: TermWidget):
+        '''
+        Move card down in widget tree
+        '''
+        terms = self.get_terms()
+        idx = terms.index(card)
+        # If first card, do nothing
+        if idx > 0: 
+            self.delete_card(card)
+            self.ids['termlayout'].add_widget(card, index=idx-1)
+            
