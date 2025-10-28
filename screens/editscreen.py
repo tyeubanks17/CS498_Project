@@ -85,8 +85,6 @@ class EditScreen(Screen):
     Builder.load_file("./screens/editscreen.kv")
     Config.set('graphics', 'resizable', True)
 
-    terms = []
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Add initial term objects on load
@@ -98,36 +96,39 @@ class EditScreen(Screen):
         # Reset screen here or on_leave?
         pass
 
+    def get_terms(self):
+        return self.ids['termlayout'].children
+
     def add_card(self): 
         '''
         Add a blank flashcard to the editor interface
         '''
         tw = TermWidget()
-        if len(self.terms) >= 1:
-            self.terms[-1].ids['defnfield'].focus_next = tw.ids['termfield']
+        terms = self.get_terms()
+        if len(terms) >= 1:
+            terms[-1].ids['defnfield'].focus_next = tw.ids['termfield']
         else: 
             self.ids['descfield'].focus_next = tw.ids['termfield']
-        self.terms.append(tw)
-        self.ids['termlayout'].add_widget(self.terms[-1])
+        self.ids['termlayout'].add_widget(tw)
 
     def delete_card(self, card: TermWidget):
         '''
         Delete card from editor
         '''
-        idx = self.terms.index(card)
+        terms = self.get_terms()
+        idx = terms.index(card)
         # Handle tab naviagation
         # If card was not on extreme end
-        if idx >= 1 and len(self.terms) > idx+1:
-            self.terms[idx-1].ids['defnfield'].focus_next = self.terms[idx+1].ids['termfield']
-        elif idx == 0 and len(self.terms) > idx+1:
+        if idx >= 1 and len(terms) > idx+1:
+            terms[idx-1].ids['defnfield'].focus_next = terms[idx+1].ids['termfield']
+        elif idx == 0 and len(terms) > idx+1:
             # If card was first, update descfield focus_next
-            self.ids['descfield'].focus_next = self.terms[idx+1].ids['termfield']
-        elif idx == len(self.terms)-1 and idx >= 1: 
+            self.ids['descfield'].focus_next = terms[idx+1].ids['termfield']
+        elif idx == len(terms)-1 and idx >= 1: 
             # If card was last, remove focus_next from previous
-            self.terms[idx-1].ids['defnfield'].focus_next = None
+            terms[idx-1].ids['defnfield'].focus_next = None
         else: 
             # If card was only one in list, add blank card when removing
             self.add_card()
-            self.ids['descfield'].focus_next = self.terms[-1].ids['termfield']
-        self.terms.remove(card)
+            self.ids['descfield'].focus_next = terms[-1].ids['termfield']
         self.ids['termlayout'].remove_widget(card)
