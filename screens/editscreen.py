@@ -17,6 +17,7 @@ from kivy.core.window import Window
 from kivy.properties import StringProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
+from kivy.config import Config
 
 def find_ancestor_of_type(child, ances_type): 
     '''
@@ -72,12 +73,17 @@ class TermWidget(BoxLayout):
     text fields, as well as other entry manipulation
     controls
     '''
-    pass
+    def get_editor(self):
+        '''
+        Return the nearest EditScreen instance
+        '''
+        return find_ancestor_of_type(self, EditScreen)
 
 class EditScreen(Screen):
     NUM_TERMS_ON_LOAD = 2
 
     Builder.load_file("./screens/editscreen.kv")
+    Config.set('graphics', 'resizable', True)
 
     terms = []
 
@@ -103,3 +109,25 @@ class EditScreen(Screen):
             self.ids['descfield'].focus_next = tw.ids['termfield']
         self.terms.append(tw)
         self.ids['termlayout'].add_widget(self.terms[-1])
+
+    def delete_card(self, card: TermWidget):
+        '''
+        Delete card from editor
+        '''
+        idx = self.terms.index(card)
+        # Handle tab naviagation
+        # If card was not on extreme end
+        if idx >= 1 and len(self.terms) > idx+1:
+            self.terms[idx-1].ids['defnfield'].focus_next = self.terms[idx+1].ids['termfield']
+        elif idx == 0 and len(self.terms) > idx+1:
+            # If card was first, update descfield focus_next
+            self.ids['descfield'].focus_next = self.terms[idx+1].ids['termfield']
+        elif idx == len(self.terms)-1 and idx >= 1: 
+            # If card was last, remove focus_next from previous
+            self.terms[idx-1].ids['defnfield'].focus_next = None
+        else: 
+            # If card was only one in list, add blank card when removing
+            self.add_card()
+            self.ids['descfield'].focus_next = self.terms[-1].ids['termfield']
+        self.terms.remove(card)
+        self.ids['termlayout'].remove_widget(card)
