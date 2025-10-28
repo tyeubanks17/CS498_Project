@@ -137,6 +137,27 @@ class EditScreen(Screen):
             self.add_card()
             self.ids['descfield'].focus_next = terms[-1].ids['termfield']
         self.ids['termlayout'].remove_widget(card)
+
+    def insert_card(self, card: TermWidget, index_: int):
+        '''
+        Insert a given card at a particular index
+        '''
+        terms = self.get_terms()
+        if index_ < 0 or index_ >= len(terms): 
+            raise ValueError("Index must be between 0 and " + str(len(terms)))
+        
+        self.ids['termlayout'].add_widget(card, index=index_)
+        terms = sef.get_terms()
+        if index_ > 0: 
+            terms[index_-1].ids['defnfield'].focus_next = card
+            if index_ < len(terms)-1:
+                card.ids['defnfield'].focus_next = terms[index_+1].ids['termfield']
+        else: 
+            self.ids['descfield'].focus_next = card.ids['termfield']
+            if index_ < len(terms)-1:
+                card.ids['defnfield'].focus_next = terms[index_+1].ids['termfield']
+        self.do_tab_ordering()
+        
     def move_card_up(self, card: TermWidget):
         '''
         Move card up in widget tree
@@ -184,3 +205,36 @@ class EditScreen(Screen):
         else: 
             terms[idx-1].ids['defnfield'].focus_next = None
         terms[idx-1].focus = True
+
+    def move_card_to_index(self, card: TermWidget, index: int): 
+        '''
+        Move card to specific index in tree
+        '''
+        terms = self.get_terms()
+        self.delete_card(card)
+        if index < 0: 
+            self.insert_card(card, 0)
+        elif index >= len(terms):
+            self.insert_card(card, len(terms)-1)
+        else: 
+            self.insert_card(card, index)
+        self.do_tab_ordering()
+
+    def do_tab_ordering(self):
+        '''
+        Reset tab navigation ordering (focus_next) for all terms
+        '''
+        terms = self.get_terms()
+        if len(terms) <= 0:
+            # If no terms, do nothing
+            return
+        self.ids['descfield'].focus_next = terms[-1].ids['termfield']
+        if len(terms) > 1:
+            terms[-1].ids['defnfield'].focus_next = terms[-2].ids['termfield']
+        for idx in range(len(terms)):
+            if idx < len(terms)-1: 
+                terms[idx+1].ids['defnfield'].focus_next = terms[idx].ids['termfield']
+        terms[0].idx['defnfield'].focus_next = None
+            
+            
+            
