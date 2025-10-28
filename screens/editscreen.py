@@ -46,6 +46,9 @@ class TermTextInput(TextInput):
         '''
         Scroll to text box when focused
         '''
+        # If unfocusing, do nothing
+        if not value: 
+            return
         # Test whether element is visible
         left,bot = self.to_window(self.x, self.y)
         right,top = self.to_window(self.right, self.top)
@@ -71,6 +74,25 @@ class TermTextInput(TextInput):
         
         # Call original method
         super().keyboard_on_key_down(window, keycode, text, modifiers)
+
+class TermIndexInput(TextInput):
+    '''
+    Custom TextInput field for term index
+    Calls move_term method when unfocused
+    '''
+    multiline = False
+    write_tab = False
+
+    def on_focus(self, instance, value): 
+        '''
+        Update card position on unfocus
+        '''
+        # Only run on unfocus
+        if not value: 
+            es = find_ancestor_of_type(self, EditScreen)
+            card = find_ancestor_of_type(self, TermWidget)
+            es.move_card_to_index(card, int(self.text))
+        
 
 class TermWidget(BoxLayout):
     '''
@@ -115,7 +137,7 @@ class EditScreen(Screen):
             terms[0].ids['defnfield'].focus_next = tw.ids['termfield']
         else: 
             self.ids['descfield'].focus_next = tw.ids['termfield']
-        tw.ids['idxfield'].text = len(terms)
+        tw.ids['idxfield'].text = str(len(terms) + 1)
         self.ids['termlayout'].add_widget(tw)
 
     def delete_card(self, card: TermWidget):
@@ -145,20 +167,7 @@ class EditScreen(Screen):
         '''
         Insert a given card at a particular index
         '''
-        terms = self.get_terms()
-        if index_ < 0 or index_ >= len(terms): 
-            raise ValueError("Index must be between 0 and " + str(len(terms)))
-        
         self.ids['termlayout'].add_widget(card, index=index_)
-        terms = sef.get_terms()
-        if index_ > 0: 
-            terms[index_-1].ids['defnfield'].focus_next = card
-            if index_ < len(terms)-1:
-                card.ids['defnfield'].focus_next = terms[index_+1].ids['termfield']
-        else: 
-            self.ids['descfield'].focus_next = card.ids['termfield']
-            if index_ < len(terms)-1:
-                card.ids['defnfield'].focus_next = terms[index_+1].ids['termfield']
         self.do_tab_ordering()
         self.do_term_indexing()
         
@@ -172,6 +181,9 @@ class EditScreen(Screen):
         if idx < len(terms)-1: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx+1)
+        else: 
+            # If first card, do nothing
+            return
         # Fix tab ordering
         terms = self.get_terms()
         if idx >= len(terms)-2:
@@ -186,8 +198,8 @@ class EditScreen(Screen):
             terms[idx].ids['defnfield'].focus_next = None
         terms[idx+1].focus = True
         # Update term indices
-        terms[idx+1].ids['idxfield'].text = len(terms) - (idx+1)
-        terms[idx].ids['idxfield'].text = len(terms) - idx
+        terms[idx+1].ids['idxfield'].text = str(len(terms) - (idx+1))
+        terms[idx].ids['idxfield'].text = str(len(terms) - idx)
 
     def move_card_down(self, card: TermWidget):
         '''
@@ -195,10 +207,12 @@ class EditScreen(Screen):
         '''
         terms = self.get_terms()
         idx = terms.index(card)
-        # If first card, do nothing
         if idx > 0: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx-1)
+        else: 
+            # If last card, do nothing
+            return
         # Fix tab ordering
         terms = self.get_terms()
         if idx >= len(terms)-1:
@@ -212,24 +226,23 @@ class EditScreen(Screen):
         else: 
             terms[idx-1].ids['defnfield'].focus_next = None
         terms[idx-1].focus = True
-        # Update term indexing
-        terms[idx-1].ids['idxfield'].text = len(terms) - (idx-1)
-        terms[idx].ids['idxfield'].text = len(terms) - idx
 
     def move_card_to_index(self, card: TermWidget, index: int): 
         '''
         Move card to specific index in tree
         '''
+        # Convert index to 0-indexed reverse-ordering (to match Widget tree)
         terms = self.get_terms()
+        idx = len(terms) - index
+        print(index, idx)
         self.delete_card(card)
-        if index < 0: 
+        if idx < 0: 
             self.insert_card(card, 0)
-        elif index >= len(terms):
-            self.insert_card(card, len(terms)-1)
+        elif idx >= len(terms):
+            self.insert_card(card, len(terms))
+            print(len(terms))
         else: 
-            self.insert_card(card, index)
-        self.do_tab_ordering()
-        self.do_term_indexing()
+            self.insert_card(card, idx)
 
     def do_tab_ordering(self):
         '''
@@ -252,5 +265,6 @@ class EditScreen(Screen):
         Update index fields for all terms
         '''
         terms = self.get_terms()
+        print(terms)
         for idx in range(len(terms)):
-            terms[idx].ids['idxfield'].text = len(terms) - idx
+            terms[idx].ids['idxfield'].text = str(len(terms) - idx)
