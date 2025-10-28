@@ -6,6 +6,7 @@ Definition for set creation/editing screen
 History: 
 22 Oct 2025 - Created
 23 Oct 2025 - Add term/definition fields, tab navigation
+27 Oct 2025 - Title/description fields; delete, reorder terms
 '''
 
 from kivy.uix.screenmanager import Screen
@@ -57,12 +58,16 @@ class TermTextInput(TextInput):
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         # Tab keycode: (9, 'tab')
-        if keycode == (9, 'tab'):
+        # Disable if tabbing backward (holding shift)
+        if (
+            keycode == (9, 'tab') and 
+            'shift' not in modifiers and 
+            not self.focus_next
+        ):
             # If last term, find EditScreen instance
             # and call add_card()
-            if not self.focus_next: 
-                es = find_ancestor_of_type(self, EditScreen)
-                es.add_card()
+            es = find_ancestor_of_type(self, EditScreen)
+            es.add_card()
         
         # Call original method
         super().keyboard_on_key_down(window, keycode, text, modifiers)
@@ -106,7 +111,7 @@ class EditScreen(Screen):
         tw = TermWidget()
         terms = self.get_terms()
         if len(terms) >= 1:
-            terms[-1].ids['defnfield'].focus_next = tw.ids['termfield']
+            terms[0].ids['defnfield'].focus_next = tw.ids['termfield']
         else: 
             self.ids['descfield'].focus_next = tw.ids['termfield']
         self.ids['termlayout'].add_widget(tw)
@@ -133,7 +138,6 @@ class EditScreen(Screen):
             self.ids['descfield'].focus_next = terms[-1].ids['termfield']
         self.ids['termlayout'].remove_widget(card)
     def move_card_up(self, card: TermWidget):
-        
         '''
         Move card up in widget tree
         '''
@@ -143,7 +147,20 @@ class EditScreen(Screen):
         if idx < len(terms)-1: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx+1)
-            
+        # Fix tab ordering
+        terms = self.get_terms()
+        if idx >= len(terms)-2:
+            self.ids['descfield'].focus_next = terms[idx+1].ids['termfield']
+            terms[idx+1].ids['defnfield'].focus_next = terms[idx].ids['termfield']
+        else: 
+            terms[idx+2].ids['defnfield'].focus_next = terms[idx+1].ids['termfield']
+            terms[idx+1].ids['defnfield'].focus_next = terms[idx].ids['termfield']
+        if idx > 0:
+            terms[idx].ids['defnfield'].focus_next = terms[idx-1].ids['termfield']
+        else: 
+            terms[idx].ids['defnfield'].focus_next = None
+        terms[idx+1].focus = True
+
     def move_card_down(self, card: TermWidget):
         '''
         Move card down in widget tree
@@ -154,4 +171,16 @@ class EditScreen(Screen):
         if idx > 0: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx-1)
-            
+        # Fix tab ordering
+        terms = self.get_terms()
+        if idx >= len(terms)-1:
+            self.ids['descfield'].focus_next = terms[idx].ids['termfield']
+            terms[idx].ids['defnfield'].focus_next = terms[idx-1].ids['termfield']
+        else: 
+            terms[idx+1].ids['defnfield'].focus_next = terms[idx].ids['termfield']
+            terms[idx].ids['defnfield'].focus_next = terms[idx-1].ids['termfield']
+        if idx > 1: 
+            terms[idx-1].ids['defnfield'].focus_next = terms[idx-2].ids['termfield']
+        else: 
+            terms[idx-1].ids['defnfield'].focus_next = None
+        terms[idx-1].focus = True
