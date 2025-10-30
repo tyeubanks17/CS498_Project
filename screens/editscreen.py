@@ -226,6 +226,10 @@ class EditScreen(Screen):
         else: 
             terms[idx-1].ids['defnfield'].focus_next = None
         terms[idx-1].focus = True
+        # Update term indices
+        terms[idx-1].ids['idxfield'].text = str(len(terms) - (idx-1))
+        if idx > 1:
+            terms[idx-2].ids['idxfield'].text = str(len(terms) - (idx-2))
 
     def move_card_to_index(self, card: TermWidget, index: int): 
         '''
@@ -234,13 +238,11 @@ class EditScreen(Screen):
         # Convert index to 0-indexed reverse-ordering (to match Widget tree)
         terms = self.get_terms()
         idx = len(terms) - index
-        print(index, idx)
         self.delete_card(card)
         if idx < 0: 
             self.insert_card(card, 0)
         elif idx >= len(terms):
             self.insert_card(card, len(terms))
-            print(len(terms))
         else: 
             self.insert_card(card, idx)
 
@@ -265,6 +267,5 @@ class EditScreen(Screen):
         Update index fields for all terms
         '''
         terms = self.get_terms()
-        print(terms)
         for idx in range(len(terms)):
             terms[idx].ids['idxfield'].text = str(len(terms) - idx)
