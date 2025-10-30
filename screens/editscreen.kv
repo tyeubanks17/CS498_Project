@@ -9,62 +9,68 @@
     size_hint: None, 0.8
 
 <TermWidget>: # @BoxLayout
-    orientation: 'horizontal'
+    orientation: 'vertical'
     size_hint_y: None
     height: self.minimum_height
     spacing: '10dp'
-
-    Button: 
-        id: upbtn
-        size_hint: None, None
-        pos_hint: { 'x': 0, 'center_y': 0.5 }
-        background_normal: 'assets/noun-up-arrow-6250101.png'
-        background_down: 'assets/noun-up-arrow-6250101.png'
-        width: '30dp'
-        height: '25dp'
-        on_release: root.get_editor().move_card_up(root)
-    Button: 
-        id: downbtn
-        size_hint: None, None
-        pos_hint: { 'x': 0, 'center_y': 0.5 }
-        background_normal: 'assets/downArrow.png'
-        background_down: 'assets/downArrow.png'
-        width: '30dp'
-        height: '25dp'
-        on_release: root.get_editor().move_card_down(root)
-    TermIndexInput: 
-        id: idxfield
-        size_hint: None, None
-        width: '30dp'
-        height: '30dp'
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5 }
-
-    TermTextInput: 
-        id: termfield
+    
+    BoxLayout: 
+        orientation: 'horizontal'
         size_hint_y: None
-        height: self.font_size + dp(15)
-        pos_hint: { 'top': 1 }
-        multiline: False
-        focus_next: defnfield
-        write_tab: False
+        height: self.minimum_height
+        spacing: '10dp'
 
-    TermTextInput: 
-        id: defnfield
-        size_hint_y: None
-        height: self.font_size*3 + dp(15)
-        pos_hint: { 'top': 1 }
-        multiline: True
-        write_tab: False
+        Button: 
+            id: upbtn
+            size_hint: None, None
+            pos_hint: { 'x': 0, 'center_y': 0.5 }
+            background_normal: 'assets/noun-up-arrow-6250101.png'
+            background_down: 'assets/noun-up-arrow-6250101.png'
+            width: '30dp'
+            height: '25dp'
+            on_release: root.get_editor().move_card_up(root)
+        Button: 
+            id: downbtn
+            size_hint: None, None
+            pos_hint: { 'x': 0, 'center_y': 0.5 }
+            background_normal: 'assets/downArrow.png'
+            background_down: 'assets/downArrow.png'
+            width: '30dp'
+            height: '25dp'
+            on_release: root.get_editor().move_card_down(root)
+        TermIndexInput: 
+            id: idxfield
+            size_hint: None, None
+            width: '30dp'
+            height: '30dp'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5 }
 
-    Button: 
-        id: delbtn
-        size_hint: None, None
-        pos_hint: { 'x': 0, 'center_y': 0.5 }
-        background_normal: 'assets/noun-trash-8055549.png'
-        background_down: 'assets/noun-trash-8055549.png'
-        width: '30dp'
-        height: '30dp'
-        on_release: root.get_editor().delete_card(root)
+        TermTextInput: 
+            id: termfield
+            size_hint_y: None
+            height: self.font_size + dp(15)
+            pos_hint: { 'top': 1 }
+            multiline: False
+            focus_next: defnfield
+            write_tab: False
+
+        TermTextInput: 
+            id: defnfield
+            size_hint_y: None
+            height: self.font_size*3 + dp(15)
+            pos_hint: { 'top': 1 }
+            multiline: True
+            write_tab: False
+
+        Button: 
+            id: delbtn
+            size_hint: None, None
+            pos_hint: { 'x': 0, 'center_y': 0.5 }
+            background_normal: 'assets/noun-trash-8055549.png'
+            background_down: 'assets/noun-trash-8055549.png'
+            width: '30dp'
+            height: '30dp'
+            on_release: root.get_editor().delete_card(root)
 
 <EditScreen>:
     BoxLayout:
