@@ -71,6 +71,15 @@
             width: '30dp'
             height: '30dp'
             on_release: root.get_editor().delete_card(root)
+    
+    Button: 
+        id: insertbtn
+        size_hint: None, None
+        pos_hint: { 'center_x': 0.5, 'center_y': 0.5 }
+        background_normal: 'assets/noun-plus-4911233.png'
+        width: '30dp'
+        height: '30dp'
+        on_release: root.insert_card_below()
 
 <EditScreen>:
     BoxLayout:
