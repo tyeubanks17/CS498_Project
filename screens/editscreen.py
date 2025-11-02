@@ -15,12 +15,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
-from kivy.properties import StringProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.config import Config
 
 from widgets import IconButton
+
+from set import Set
 
 def find_ancestor_of_type(child, ances_type): 
     '''
