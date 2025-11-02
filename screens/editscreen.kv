@@ -25,22 +25,22 @@
             size_hint: None, None
             pos_hint: { 'x': 0, 'center_y': 0.5 }
             source: 'assets/noun-up-arrow-6250101.png'
-            width: '30dp'
-            height: '25dp'
+            width: '20dp'
+            height: '15dp'
             on_release: root.get_editor().move_card_up(root)
         IconButton: 
             id: downbtn
             size_hint: None, None
             pos_hint: { 'x': 0, 'center_y': 0.5 }
             source: 'assets/downArrow.png'
-            width: '30dp'
-            height: '25dp'
+            width: '20dp'
+            height: '15dp'
             on_release: root.get_editor().move_card_down(root)
         TermIndexInput: 
             id: idxfield
             size_hint: None, None
-            width: '30dp'
-            height: '30dp'
+            width: '25dp'
+            height: '25dp'
             pos_hint: {'center_x': 0.5, 'center_y': 0.5 }
 
         TermTextInput: 
@@ -64,9 +64,9 @@
             id: delbtn
             size_hint: None, None
             pos_hint: { 'x': 0, 'center_y': 0.5 }
-            source: 'assets/noun-trash-8055549.png'
-            width: '30dp'
-            height: '30dp'
+            source: 'assets/noun-trash-3552557.png'
+            width: '17dp'
+            height: '20dp'
             on_release: root.get_editor().delete_card(root)
     
     IconButton: 
@@ -74,8 +74,8 @@
         size_hint: None, None
         pos_hint: { 'center_x': 0.5, 'center_y': 0.5 }
         source: 'assets/noun-plus-4911233.png'
-        width: '30dp'
-        height: '30dp'
+        width: '20dp'
+        height: '20dp'
         on_release: root.insert_card_below()
 
 <EditScreen>:
