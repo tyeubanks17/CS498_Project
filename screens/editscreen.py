@@ -8,6 +8,7 @@ History:
 23 Oct 2025 - Add term/definition fields, tab navigation
 27 Oct 2025 - Title/description fields; delete, reorder terms
 '''
+import os, re
 
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
@@ -39,12 +40,13 @@ def find_ancestor_of_type(child, ances_type):
             count += 1
     return ancestor
 
+#region custom_widgets
+
 class TermTextInput(TextInput):
     '''
     Custom TextInput class to allow hijacking tab
     navigation to add new card
     '''
-    # on_focus = root.on_input_focus(self)
     def on_focus(self, instance, value):
         '''
         Scroll to text box when focused
@@ -95,6 +97,21 @@ class TermIndexInput(TextInput):
             es = find_ancestor_of_type(self, EditScreen)
             card = find_ancestor_of_type(self, TermWidget)
             es.move_card_to_index(card, int(self.text))
+
+class SetTitleInput(TextInput): 
+    '''
+    Custom TextInput field for set title
+    Filters disallowed characters for file
+    naming purposes. 
+    Based on docs: 
+    https://kivy.org/doc/stable/api-kivy.uix.textinput.html#filtering
+    '''
+    # Disallowed characters regex
+    bad_char = Set.ILLEGAL_CHARS_RE
+    def insert_text(self, substring, from_undo=False):
+        s = re.sub(self.bad_char, '', substring)
+        # Display error if user inputs invalid characters (compare s to substring)?
+        return super().insert_text(s, from_undo=from_undo)
         
 
 class TermWidget(BoxLayout):
@@ -117,14 +134,19 @@ class TermWidget(BoxLayout):
         selfidx = e.get_terms().index(self)
         e.insert_card(TermWidget(), selfidx)
 
+#endregion
+
 class EditScreen(Screen):
     NUM_TERMS_ON_LOAD = 2
 
     Builder.load_file("./screens/editscreen.kv")
     Config.set('graphics', 'resizable', True)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, set_=None, **kwargs):
+        super().__init__(**kwargs)
+        # Initialize Set instance for current editor window
+        # Defaults to new set instance (created on title entry), but may be passed in as param
+        self.set = set_
         # Add initial term objects on load
         for _ in range(self.NUM_TERMS_ON_LOAD):
             self.add_card()
@@ -134,6 +156,92 @@ class EditScreen(Screen):
         # Reset screen here or on_leave?
         pass
 
+    def set_err(self, msg): 
+        '''
+        Set err msg
+        '''
+        self.ids['errmsg'].text = msg
+
+    def clear_err(self): 
+        '''
+        Clear err msg
+        '''
+        self.ids['errmsg'].text = ""
+
+    def update_title(self, text_content, focused): 
+        '''
+        Update filepath of Set instance when Title 
+        field is updated
+        '''
+        # Run on defocus only
+        if not focused: 
+            print("update_title")
+            self.clear_err()
+            if not text_content: 
+                # If text is null, do nothing
+                self.set_err("Title cannot be empty.")
+                return False
+            # Depends on state of self.set
+            save_file_path = Set.to_set_path(text_content)
+            if self.set is None: 
+                # Title contents should not contain illegal characters
+                assert not re.match(Set.ILLEGAL_CHARS_RE, text_content)
+                # Initialize set
+                self.set = Set(save_file_path)
+            else: 
+                # Update Set path
+                try: 
+                    os.rename(self.set.path, save_file_path)
+                    self.set.path = save_file_path
+                except FileNotFoundError: 
+                    # Savefile does not exist yet
+                    self.set.path = save_file_path
+                except FileExistsError: 
+                    # File with name already exists
+                    self.set_err("A set with this name already exists!")
+                    return False
+            return True
+        
+    def update_set(self, input_widget, focused): 
+        '''
+        Whenever user edits a term/definition,
+        update the underlying Set object
+        Called in on_focus of TermTextInputs
+        '''
+        terms = self.get_terms()
+        # Find index of input widget - match to set entry
+        idx = terms.index(input_widget)
+        print(idx)
+        if input_widget.id == 'termfield':
+            self.set.data[idx]['term'] = input_widget.text
+        elif input_widget.id == 'defnfield': 
+            self.set.data[idx]['definition'] = input_widget.text
+        else: 
+            # Input widget ID does not match term or definition
+            raise ValueError("TextInput ID does not match term or definition!")
+        
+
+    def save_set(self):
+        '''
+        Save set when save button is clicked
+        Validate that there is a valid save path
+        ''' 
+        print("Save_set")
+        titleobj = self.ids['titlefield']
+        self.clear_err()
+        if self.set is None: 
+            # Check title field and update set, if possible
+            # Otherwise, print error
+            if not self.update_title(titleobj.text, False): 
+                self.ids['errmsg'].text += " Unable to save."
+                return False
+        # Set should be initialized by now
+        assert self.set is not None
+        self.set.save()
+        return True
+
+    #region card_manipulation_methods
+    
     def get_terms(self):
         return self.ids['termlayout'].children
 
@@ -280,3 +388,5 @@ class EditScreen(Screen):
         terms = self.get_terms()
         for idx in range(len(terms)):
             terms[idx].ids['idxfield'].text = str(len(terms) - idx)
+
+    #endregion

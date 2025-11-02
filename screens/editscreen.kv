@@ -110,6 +110,7 @@
 
                 MenuBtn: 
                     text: 'Save'
+                    on_release: root.save_set()
             
             Label: 
                 text: 'Edit a set'
@@ -119,6 +120,13 @@
                 width: self.texture_size[0]
                 padding: '20dp'
                 pos_hint: { 'center_x': 0.5, 'center_y': 0.5}
+
+            Label: 
+                id: errmsg
+                pos_hint: { 'top': 0.2, 'center_x': 0.5 }
+                color: 1, 0.4, 0.2, 1
+                bold: True
+                text: "Err msg goes here."
 
         ScrollView: 
             doScrollX: False
@@ -154,13 +162,14 @@
                             text: 'Title:'
                             text_size: self.size
                             halign: 'left'
-                        TextInput: 
+                        SetTitleInput: 
                             id: titlefield
                             size_hint_y: None
                             height: self.font_size + dp(15)
                             multiline: False
                             write_tab: False
                             focus_next: descfield
+                            on_focus: root.update_title(self.text, self.focus)
                         Label: 
                             text: 'Description:'
                             text_size: self.size
@@ -211,3 +220,4 @@
                     height: self.font_size + dp(25)
                     padding: dp(20)
                     pos_hint: { 'right': 1 }
+                    on_release: root.save_set()
