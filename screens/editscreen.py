@@ -20,6 +20,8 @@ from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.config import Config
 
+from widgets import IconButton
+
 def find_ancestor_of_type(child, ances_type): 
     '''
     Helper method to find nearest ancestor of given type

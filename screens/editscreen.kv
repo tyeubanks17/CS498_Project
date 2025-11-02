@@ -20,21 +20,19 @@
         height: self.minimum_height
         spacing: '10dp'
 
-        Button: 
+        IconButton: 
             id: upbtn
             size_hint: None, None
             pos_hint: { 'x': 0, 'center_y': 0.5 }
-            background_normal: 'assets/noun-up-arrow-6250101.png'
-            background_down: 'assets/noun-up-arrow-6250101.png'
+            source: 'assets/noun-up-arrow-6250101.png'
             width: '30dp'
             height: '25dp'
             on_release: root.get_editor().move_card_up(root)
-        Button: 
+        IconButton: 
             id: downbtn
             size_hint: None, None
             pos_hint: { 'x': 0, 'center_y': 0.5 }
-            background_normal: 'assets/downArrow.png'
-            background_down: 'assets/downArrow.png'
+            source: 'assets/downArrow.png'
             width: '30dp'
             height: '25dp'
             on_release: root.get_editor().move_card_down(root)
@@ -62,21 +60,20 @@
             multiline: True
             write_tab: False
 
-        Button: 
+        IconButton: 
             id: delbtn
             size_hint: None, None
             pos_hint: { 'x': 0, 'center_y': 0.5 }
-            background_normal: 'assets/noun-trash-8055549.png'
-            background_down: 'assets/noun-trash-8055549.png'
+            source: 'assets/noun-trash-8055549.png'
             width: '30dp'
             height: '30dp'
             on_release: root.get_editor().delete_card(root)
     
-    Button: 
+    IconButton: 
         id: insertbtn
         size_hint: None, None
         pos_hint: { 'center_x': 0.5, 'center_y': 0.5 }
-        background_normal: 'assets/noun-plus-4911233.png'
+        source: 'assets/noun-plus-4911233.png'
         width: '30dp'
         height: '30dp'
         on_release: root.insert_card_below()
