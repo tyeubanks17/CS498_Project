@@ -51,17 +51,20 @@ class TermTextInput(TextInput):
         '''
         Scroll to text box when focused
         '''
-        # If unfocusing, do nothing
-        if not value: 
-            return
-        # Test whether element is visible
-        left,bot = self.to_window(self.x, self.y)
-        right,top = self.to_window(self.right, self.top)
-        SCR_PAD = dp(20)
-        if bot < 0 or top > Window.height - SCR_PAD:
-            # Find ScrollView, scroll to self
-            sv = find_ancestor_of_type(self, ScrollView)
-            sv.scroll_to(self)
+        # On focus, autoscroll to location
+        if value: 
+            # Test whether element is visible
+            left,bot = self.to_window(self.x, self.y)
+            right,top = self.to_window(self.right, self.top)
+            SCR_PAD = dp(20)
+            if bot < 0 or top > Window.height - SCR_PAD:
+                # Find ScrollView, scroll to self
+                sv = find_ancestor_of_type(self, ScrollView)
+                sv.scroll_to(self)
+        else: 
+            # On unfocus, call update_set()
+            tw = find_ancestor_of_type(self, TermWidget)
+            tw.update_set_term()
 
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
@@ -125,6 +128,14 @@ class TermWidget(BoxLayout):
         Return the nearest EditScreen instance
         '''
         return find_ancestor_of_type(self, EditScreen)
+    
+    def update_set_term(self):
+        '''
+        Update corresponding term in Set data struct
+        '''
+        es = find_ancestor_of_type(self, EditScreen)
+        es.update_set_term(self)
+
 
     def insert_card_below(self): 
         '''
@@ -200,30 +211,81 @@ class EditScreen(Screen):
                     # File with name already exists
                     self.set_err("A set with this name already exists!")
                     return False
+            self.update_set()
             return True
         
-    def update_set(self, input_widget, focused): 
+    def update_set(self): 
+        '''
+        Update entire set data struct
+        Used when reordering terms
+
+        N.B. not called when nudging terms 1 space up/down for efficiency
+        '''
+        if self.set is None: 
+            self.set_err("Title may not be empty.")
+            # Cannot do anything else until title is set and self.set is initialized
+            return
+        else: 
+            self.clear_err()
+
+        terms = self.get_terms()
+        for i in range(len(terms)): 
+            # Flip indexing to match visual order
+            idx = len(terms) - i - 1
+            print(idx)
+            term = terms[idx]
+            if i >= len(self.set.data): 
+                # Add new entry
+                self.set.data.append({
+                    'term': term.ids['termfield'].text,
+                    'definition': term.ids['defnfield'].text
+                })
+            else: 
+                self.set.data[i] = {
+                    'term': term.ids['termfield'].text,
+                    'definition': term.ids['defnfield'].text
+                }
+        print("update_set")
+        print("Set path:",self.set.path)
+        print(self.set.data)
+        
+    def update_set_term(self, input_widget): 
         '''
         Whenever user edits a term/definition,
         update the underlying Set object
         Called in on_focus of TermTextInputs
         '''
-        terms = self.get_terms()
-        # Find index of input widget - match to set entry
-        idx = terms.index(input_widget)
-        print(idx)
-        if input_widget.id == 'termfield':
-            self.set.data[idx]['term'] = input_widget.text
-        elif input_widget.id == 'defnfield': 
-            self.set.data[idx]['definition'] = input_widget.text
+        if self.set is None: 
+            self.set_err("Title may not be empty.")
+            # Cannot do anything else until title is set and self.set is initialized
+            return
         else: 
-            # Input widget ID does not match term or definition
-            raise ValueError("TextInput ID does not match term or definition!")
+            self.clear_err()
+        
+        terms = self.get_terms()
+        idx = terms.index(input_widget)
+        # Flip indexing to match visual order
+        idx = len(terms) - idx - 1
+        if idx >= len(self.set.data): 
+            # Add new entry
+            self.set.data.append({
+                'term': input_widget.ids['termfield'].text,
+                'definition': input_widget.ids['defnfield'].text
+            })
+        else: 
+            self.set.data[idx] = {
+                'term': input_widget.ids['termfield'].text,
+                'definition': input_widget.ids['defnfield'].text
+            }
+        print("update_set_term")
+        print("Set path:",self.set.path)
+        print(self.set.data)
         
 
     def save_set(self):
         '''
         Save set when save button is clicked
+        Run final Set update
         Validate that there is a valid save path
         ''' 
         print("Save_set")
@@ -236,7 +298,9 @@ class EditScreen(Screen):
                 self.ids['errmsg'].text += " Unable to save."
                 return False
         # Set should be initialized by now
+        # Run one last update and save
         assert self.set is not None
+        self.update_set()
         self.set.save()
         return True
 
@@ -289,6 +353,7 @@ class EditScreen(Screen):
         self.ids['termlayout'].add_widget(card, index=index_)
         self.do_tab_ordering()
         self.do_term_indexing()
+        self.update_set()
         
     def move_card_up(self, card: TermWidget):
         '''
@@ -296,7 +361,7 @@ class EditScreen(Screen):
         '''
         terms = self.get_terms()
         idx = terms.index(card)
-        # If last card, do nothing
+
         if idx < len(terms)-1: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx+1)
@@ -319,6 +384,7 @@ class EditScreen(Screen):
         # Update term indices
         terms[idx+1].ids['idxfield'].text = str(len(terms) - (idx+1))
         terms[idx].ids['idxfield'].text = str(len(terms) - idx)
+        self.update_set()
 
     def move_card_down(self, card: TermWidget):
         '''
@@ -326,6 +392,7 @@ class EditScreen(Screen):
         '''
         terms = self.get_terms()
         idx = terms.index(card)
+        
         if idx > 0: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx-1)
@@ -349,6 +416,7 @@ class EditScreen(Screen):
         terms[idx-1].ids['idxfield'].text = str(len(terms) - (idx-1))
         if idx > 1:
             terms[idx-2].ids['idxfield'].text = str(len(terms) - (idx-2))
+        self.update_set()
 
     def move_card_to_index(self, card: TermWidget, index: int): 
         '''

@@ -109,7 +109,7 @@ class Set:
         Save current state of Set to specified filepath
         '''
         with open(self.path, 'w') as file: 
-            writer = csv.writer(file, fieldnames = self._Entry.__slots__)
+            writer = csv.DictWriter(file, fieldnames = self._Entry.__slots__)
             writer.writeheader()
             writer.writerows(self.data)
 
