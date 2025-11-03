@@ -55,20 +55,18 @@
 # SDLC Rules
 The set of best practices to follow when contributing to the project. These are mostly just to keep people from stepping on each other's toes while developing.
 
-1) Never commit directly to master.
-The `master` branch should always have a working version of our code on it. Integration should be taken care of in the `staging` branch. 
-If you're not making code changes (e.g. just updating documentation), you can commit straight to `master`, but if it touches another person's work, be sure to get approval first.
+1) Don't commit directly to main. Keep your work in your own branch.
+Each feature should get its own branch and be merged into `main` via Pull Request after someone else has reviewed it.
+If you are changing files that you know another person is working on, ask them to review your code before merging.
+This gives us the chance to review each other's code and discuss potential conflicts. 
 
-3) Keep your work in your own branch.
-Each feature should get its own branch
-
-5) Each file should begin with a docstring
+2) Each file should begin with a docstring
 File docstrings should list: 
     1. the filename
     2. the purpose of the file
     3. the history of the file (creation date, revisions, etc.)
 
-6) Each method should have a docstring
+3) Each method should have a docstring
 Method docstrings should list: 
     1. the purpose of the method
     2. the arguments of the method (including type and description)
