@@ -186,17 +186,20 @@ class EditScreen(Screen):
         '''
         # Run on defocus only
         if not focused: 
-            print("update_title")
             self.clear_err()
             if not text_content: 
                 # If text is null, do nothing
                 self.set_err("Title cannot be empty.")
                 return False
             # Depends on state of self.set
-            save_file_path = Set.to_set_path(text_content)
+            save_file_path = Set.to_set_path(text_content.strip())
             if self.set is None: 
                 # Title contents should not contain illegal characters
                 assert not re.match(Set.ILLEGAL_CHARS_RE, text_content)
+                # Raise error if file already exists
+                if os.path.exists(save_file_path): 
+                    self.set_err("A set with this name already exists!")
+                    return False
                 # Initialize set
                 self.set = Set(save_file_path)
             else: 
@@ -222,7 +225,7 @@ class EditScreen(Screen):
         N.B. not called when nudging terms 1 space up/down for efficiency
         '''
         if self.set is None: 
-            self.set_err("Title may not be empty.")
+            self.set_err("Invalid title.")
             # Cannot do anything else until title is set and self.set is initialized
             return
         else: 
@@ -232,7 +235,6 @@ class EditScreen(Screen):
         for i in range(len(terms)): 
             # Flip indexing to match visual order
             idx = len(terms) - i - 1
-            print(idx)
             term = terms[idx]
             if i >= len(self.set.data): 
                 # Add new entry
@@ -245,7 +247,6 @@ class EditScreen(Screen):
                     'term': term.ids['termfield'].text,
                     'definition': term.ids['defnfield'].text
                 }
-        print("update_set")
         print("Set path:",self.set.path)
         print(self.set.data)
         
@@ -256,7 +257,7 @@ class EditScreen(Screen):
         Called in on_focus of TermTextInputs
         '''
         if self.set is None: 
-            self.set_err("Title may not be empty.")
+            self.set_err("Invalid title.")
             # Cannot do anything else until title is set and self.set is initialized
             return
         else: 
@@ -277,7 +278,6 @@ class EditScreen(Screen):
                 'term': input_widget.ids['termfield'].text,
                 'definition': input_widget.ids['defnfield'].text
             }
-        print("update_set_term")
         print("Set path:",self.set.path)
         print(self.set.data)
         
@@ -288,15 +288,13 @@ class EditScreen(Screen):
         Run final Set update
         Validate that there is a valid save path
         ''' 
-        print("Save_set")
         titleobj = self.ids['titlefield']
         self.clear_err()
-        if self.set is None: 
-            # Check title field and update set, if possible
-            # Otherwise, print error
-            if not self.update_title(titleobj.text, False): 
-                self.ids['errmsg'].text += " Unable to save."
-                return False
+        # Check title field and update set, if needed
+        # Otherwise, print error
+        if not self.update_title(titleobj.text, False): 
+            self.ids['errmsg'].text += " Unable to save."
+            return False
         # Set should be initialized by now
         # Run one last update and save
         assert self.set is not None
@@ -392,7 +390,7 @@ class EditScreen(Screen):
         '''
         terms = self.get_terms()
         idx = terms.index(card)
-        
+
         if idx > 0: 
             self.delete_card(card)
             self.ids['termlayout'].add_widget(card, index=idx-1)
