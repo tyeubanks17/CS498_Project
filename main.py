@@ -30,6 +30,7 @@ class StudyApp(App):
         sm.add_widget(EditScreen(name='editSet'))
 
         return sm
+    
 
 if __name__ == "__main__":
     StudyApp().run()

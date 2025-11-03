@@ -11,8 +11,6 @@ History:
 
 import os, csv, re
 
-
-
 class Set: 
     '''
     Set class
