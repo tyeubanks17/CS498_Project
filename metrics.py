@@ -1,33 +1,12 @@
 '''
-Reading on comma delimited csv file with a header row
-
+Reading on comma delimited csv file with a header rows "term" and "definition"
 
 Metrics to track:
 - Time spent studying 
     - Per session
-- Number of terms studied
 - Accuracy (number of correct definitions)
 - Problem areas (terms frequently answered incorrectly)
 '''
-
-'''
-Pseudo code:
-
-import os, csv
-Check if csv has correct columns (i.e., term, definition, correct_count, total_count):
-(If not, add them with default values of 0)
-
-
-
-def initialize_metrics_file(file_path):
-
-def update_metrics(file_path, term, correct):
-
-
-
-
-'''
-
 
 import csv, time
 from collections import defaultdict
