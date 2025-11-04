@@ -13,13 +13,15 @@ from collections import defaultdict
 
 class Metrics:
     def __init__(self):
-        self.all_cards = []
+        # List of all flashcards loaded from CSV
+        self.allCards = []
 
-        self.correct_counts = 0
-        self.incorrect_counts = 0
-        
-        self.start_time = None
-        self.problem_areas = defaultdict(int)  # term -> incorrect count
+        # One dictionary to track stats per term
+        # Maps term to a dictionary with keys 'correct' and 'incorrect'
+        self.termStats = defaultdict(lambda: {"correct": 0, "incorrect": 0})
+
+        self.startTime = None
+        self.totalTimeSpent = 0
 
     def load_from_csv(self, file_path):
         try:
@@ -29,46 +31,63 @@ class Metrics:
                 if 'term' not in reader.fieldnames or 'definition' not in reader.fieldnames:
                     raise ValueError("CSV file must contain 'term' and 'definition' columns.")
                 for row in reader:
-                    self.all_cards.append(row)
+                    self.allCards.append(row)
         except FileNotFoundError:
             print(f"File {file_path} not found.")
             return False
         except Exception as e:
             print(f"Error loading metrics: {e}")
             return False
+        return True
         
     def start_study_session(self):
-        self.start_time = time.time()
+        self.startTime = time.time()
         print("Study session started.")
 
     def end_study_session(self):
-        if self.start_time is None:
+        if self.startTime is None:
             print("Study session was not started.")
             return
-        elapsed_time = time.time() - self.start_time
-        print(f"Study session ended. Time spent: {elapsed_time:.2f} seconds.")
-        self.start_time = None # Reset start time
+        elapsedTime = time.time() - self.startTime
+        self.totalTimeSpent += elapsedTime
+        self.startTime = None # Reset start time
+        return "Total time spent: {elapsedTime} seconds."
 
+    # Record an answer for a term
+    # Term: str - the term being answered
+    # Correct: bool - whether the answer was correct
     def record_answer(self, term, correct):
         if correct:
-            self.correct_counts += 1
+            self.termStats[term]["correct"] += 1
         else:
-            self.incorrect_counts += 1
-            self.problem_areas[term] += 1
+            self.termStats[term]["incorrect"] += 1
 
-    def metrics_summary(self):
-        if self.start_time:
-            Metrics.end_study_session(self)
+    # Compute and return metrics summary
+    def get_metrics(self):
+        if self.startTime:
+            self.end_study_session()
 
-        total_answers = self.correct_counts + self.incorrect_counts
-        accuracy = (self.correct_counts / total_answers * 100) if total_answers > 0 else 0
+        correctCounts = 0
+        incorrectCounts = 0
+        problemAreas = {}
 
-        sorted_problem_areas = dict(sorted(self.problem_areas.items(), key=lambda item: item[1], reverse=True))
+        for term, stats in self.termStats.items():
+            correctCounts += stats["correct"]
+            incorrectCounts += stats["incorrect"]
+            if stats["incorrect"] > stats["correct"]:
+                problemAreas[term] = stats["incorrect"]
+
+        totalAnswers = correctCounts + incorrectCounts
+        accuracy = (correctCounts / totalAnswers * 100) if totalAnswers > 0 else 0
+
+        sortedProblemAreas = sorted(problemAreas.items(), key=lambda item: item[1], reverse=True)
 
         return {
-            "Total Answers": total_answers,
-            "Correct Answers": self.correct_counts,
-            "Incorrect Answers": self.incorrect_counts,
+            "Total Answers": totalAnswers,
+            "Correct Answers": correctCounts,
+            "Incorrect Answers": incorrectCounts,
             "Accuracy (%)": accuracy,
-            "Problem Areas": sorted_problem_areas
+            "Problem Areas": sortedProblemAreas,
+            "Total Time Spent (s)": self.totalTimeSpent,
+            "termStats": self.termStats
         }
