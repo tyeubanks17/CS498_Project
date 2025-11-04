@@ -20,7 +20,7 @@ from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.config import Config
 
-from widgets import IconButton, FileChooserCsv
+from widgets import IconButton, FileChooserCsv, CsvHeaderSelectPopup
 
 from set import Set
 
@@ -189,6 +189,16 @@ class EditScreen(Screen):
             '''Code to call when file is selected'''
             if fc.selection is None:
                 return
+            
+            # If file selected, load file into GUI
+            # Choose header
+            header_select = CsvHeaderSelectPopup(options=headers)
+            def csv_select_callback(instance):
+                if header_select.selection:
+                    self.create_custom_csv(rows, header_select.selection)
+            header_select.bind(on_dismiss=csv_select_callback)
+            header_select.open()
+
         fc.bind(on_dismiss=on_select_callback)
         fc.open()
 
