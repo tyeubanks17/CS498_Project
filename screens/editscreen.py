@@ -20,7 +20,7 @@ from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.config import Config
 
-from widgets import IconButton
+from widgets import IconButton, FileChooserCsv
 
 from set import Set
 
@@ -178,6 +178,19 @@ class EditScreen(Screen):
         Clear err msg
         '''
         self.ids['errmsg'].text = ""
+
+    def csv_import_picker(self):
+        '''
+        Create a set based on data from a user-selected
+        CSV file
+        '''
+        fc = FileChooserCsv()
+        def on_select_callback():
+            '''Code to call when file is selected'''
+            if fc.selection is None:
+                return
+        fc.bind(on_dismiss=on_select_callback)
+        fc.open()
 
     def update_title(self, text_content, focused): 
         '''

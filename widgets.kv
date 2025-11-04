@@ -1,4 +1,4 @@
-<FileChooserCsv>
+<FileChooserCsv>:
     title: 'Select a CSV file'
     size_hint: 0.9, 0.9
     auto_dismiss: False
@@ -28,4 +28,37 @@
                     text: 'Cancel'
                     on_release: root.cancel()
 
-                
+<CsvHeaderSelectPopup>:
+    title: 'Select Term Column'
+    size_hint: 0.7, 0.6
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '10dp'
+        padding: '10dp'
+
+        Label:
+            text: "Choose the column to use as 'term'"
+
+        Spinner: 
+            id: headerchoices
+            size_hint_y: None
+            height: '44dp'
+            text: root.options[0]
+            values: root.options
+
+        BoxLayout: 
+            id: buttons
+            size_hint_y: None
+            height: '50dp'
+            spacing: '10dp'
+
+            Button: 
+                id: okbtn
+                text: 'OK'
+                on_release: root.set_selection()
+
+            Button: 
+                id: cancelbtn
+                text: 'Cancel'
+                on_release: root.dismiss()

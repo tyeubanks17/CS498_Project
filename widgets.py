@@ -10,7 +10,7 @@ from kivy.lang import Builder
 from kivy.uix.image import Image
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.popup import Popup
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ListProperty
 
 class IconButton(ButtonBehavior, Image): 
     '''
@@ -36,4 +36,15 @@ class FileChooserCsv(Popup):
 
     def cancel(self): 
         self.selection = None
+        self.dismiss()
+
+class CsvHeaderSelectPopup(Popup):
+    '''
+    Popup dialog for choosing CSV header for 
+    term field
+    '''
+    options = ListProperty()
+
+    def set_selection(self): 
+        self.selection = self.ids['headerchoices'].text
         self.dismiss()

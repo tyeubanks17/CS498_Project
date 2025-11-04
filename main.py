@@ -20,7 +20,7 @@ from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 
 from screens.editscreen import EditScreen
-from widgets import FileChooserCsv
+from widgets import FileChooserCsv, CsvHeaderSelectPopup
 
 class MenuScreen(Screen):
     '''
@@ -47,41 +47,47 @@ class MenuScreen(Screen):
         try:
             with open(csv_path, 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
-                self.headers = reader.fieldnames
+                headers = reader.fieldnames
                 rows = list(reader)
-            print(f"Headers found: {self.headers}")
-            self.open_header_selector(rows)
+            print(f"Headers found: {headers}")
+            # self.open_header_selector(rows)
+            header_select = CsvHeaderSelectPopup(options=headers)
+            def csv_select_callback(instance):
+                if header_select.selection:
+                    self.create_custom_csv(rows, header_select.selection)
+            header_select.bind(on_dismiss=csv_select_callback)
+            header_select.open()
 
         except Exception as e:
             popup = Popup(title="Error", content=Label(text=f"Error reading CSV:\n{e}"),
                             size_hint=(0.6, 0.4))
             popup.open()
 
-    def open_header_selector(self, data):
-        layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
-        layout.add_widget(Label(text="Choose the column to use as 'term':"))
-        spinner = Spinner(text=self.headers[0], values=self.headers, size_hint_y=None, height=44)
-        layout.add_widget(spinner)
-        btn_layout = BoxLayout(size_hint_y=None, height=50, spacing=10)
-        ok_btn = Button(text="OK")
-        cancel_btn = Button(text="Cancel")
-        btn_layout.add_widget(ok_btn)
-        btn_layout.add_widget(cancel_btn)
-        layout.add_widget(btn_layout)
+    # def open_header_selector(self, data):
+    #     layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
+    #     layout.add_widget(Label(text="Choose the column to use as 'term':"))
+    #     spinner = Spinner(text=self.headers[0], values=self.headers, size_hint_y=None, height=44)
+    #     layout.add_widget(spinner)
+    #     btn_layout = BoxLayout(size_hint_y=None, height=50, spacing=10)
+    #     ok_btn = Button(text="OK")
+    #     cancel_btn = Button(text="Cancel")
+    #     btn_layout.add_widget(ok_btn)
+    #     btn_layout.add_widget(cancel_btn)
+    #     layout.add_widget(btn_layout)
 
-        popup = Popup(title="Select Term Column", content=layout, size_hint=(0.7, 0.6))
+    #     popup = Popup(title="Select Term Column", content=layout, size_hint=(0.7, 0.6))
 
-        def confirm(instance):
-            term_column = spinner.text
-            popup.dismiss()
-            self.create_custom_csv(data, term_column)
+    #     def confirm(instance):
+    #         term_column = spinner.text
+    #         popup.dismiss()
+    #         self.create_custom_csv(data, term_column)
 
-        def cancel(instance):
-            popup.dismiss()
+    #     def cancel(instance):
+    #         popup.dismiss()
 
-        ok_btn.bind(on_release=confirm)
-        cancel_btn.bind(on_release=cancel)
-        popup.open()
+    #     ok_btn.bind(on_release=confirm)
+    #     cancel_btn.bind(on_release=cancel)
+    #     popup.open()
 
     def create_custom_csv(self, data, term_column):
         try:
