@@ -14,7 +14,7 @@ class StatsTracker:
         self.all_time_stats = {}
         self.load_stats()
 
-    # Load stats from the JSON file into allTimeStats
+    # Load stats from the JSON file into all-_time_stats
     def load_stats(self):
         try:
             with open(self.file_path, 'r') as f:
@@ -30,7 +30,7 @@ class StatsTracker:
             self.all_time_stats = {}
     
     def save_stats(self):
-        # Write the allTimeStats dictionary back to the JSON file
+        # Write the all_time_stats dictionary back to the JSON file
         try:
             with open(self.file_path, 'w') as f:
                 json.dump(self.all_time_stats, f, indent=2)
@@ -38,15 +38,15 @@ class StatsTracker:
             print(f"Error saving stats: {e}")
 
     # Update stats after a study session
-    # sessionMetrics is expected to be a dictionary with metrics
+    # session_metrics is expected to be a dictionary with metrics
     def update_stats(self, set_name, session_metrics):
         # Extract term_stats from session_metrics
         session_term_data = session_metrics.get('term_stats')
-        # If no termStats found, nothing to update
+        # If no term_stats found, nothing to update
         if not session_term_data:
             print("No term stats found in session metrics, skipping update.")
             return
-        # Ensure setName entry exists in allTimeStats
+        # Ensure set_name entry exists in allTimeStats
         if set_name not in self.all_time_stats:
             self.all_time_stats[set_name] = {}
 
