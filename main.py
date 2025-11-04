@@ -20,44 +20,26 @@ from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 
 from screens.editscreen import EditScreen
+from widgets import FileChooserCsv
 
 class MenuScreen(Screen):
     '''
     Default screen that is loaded on instantiating StudyApp
     '''
     screens = ['editSet']
+    # filechooser = FileChooserCsv()
+    DEFAULT_IMPORT_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
 
     def open_filechooser(self):
-        downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
-        box = BoxLayout(orientation='vertical', spacing=20)
-        filechooser = FileChooserListView(
-            path=downloads_path,
-            filters=["*.csv"]
-        )
-        box.add_widget(filechooser)
-        buttons = BoxLayout(size_hint_y=None, height=50, spacing=10)
-        select_btn = Button(text="Select")
-        cancel_btn = Button(text="Cancel")
-        buttons.add_widget(select_btn)
-        buttons.add_widget(cancel_btn)
-        box.add_widget(buttons)
-
-        popup = Popup(title="Select a CSV file", content=box, size_hint=(0.9, 0.9))
-
-        def select_file(instance):
-            selected = filechooser.selection
-            if selected:
-                csv_path = selected[0]
+        # self.add_widget(FileChooserCsv())
+        fc = FileChooserCsv(default_path=self.DEFAULT_IMPORT_PATH)
+        def read_csv_callback(instance):
+            if fc.selection:
+                csv_path = fc.selection[0]
                 print(f"Selected CSV: {csv_path}")
-                popup.dismiss()
                 self.read_csv(csv_path)
-
-        def cancel(instance):
-            popup.dismiss()
-
-        select_btn.bind(on_release=select_file)
-        cancel_btn.bind(on_release=cancel)
-        popup.open()
+        fc.bind(on_dismiss=read_csv_callback)
+        fc.open()
 
     def read_csv(self, csv_path):
         print(f"Reading CSV from: {csv_path}")
@@ -184,7 +166,6 @@ class MenuScreen(Screen):
         delete_btn.bind(on_release=delete_file)
         cancel_btn.bind(on_release=cancel)
         popup.open()
-    
 
 class StudyApp(App):
     '''
@@ -192,6 +173,7 @@ class StudyApp(App):
     '''
     def build(self): 
         Builder.load_file('main.kv')
+        Builder.load_file('widgets.kv')
         Builder.load_file('global-styles.kv')
         sm = ScreenManager()
         sm.add_widget(MenuScreen(name='menu'))

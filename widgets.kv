@@ -1,0 +1,31 @@
+<FileChooserCsv>
+    title: 'Select a CSV file'
+    size_hint: 0.9, 0.9
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '20dp'
+
+        FileChooserListView:
+            id: filechooser
+            path: root.default_path
+            filters: ['*.csv']
+
+            BoxLayout: 
+                id: buttons
+                size_hint_y: None
+                height: '50dp'
+                spacing: '10dp'
+
+                Button: 
+                    id: select_btn
+                    text: 'Select'
+                    on_release: root.set_selection()
+
+                Button: 
+                    id: cancel_btn
+                    text: 'Cancel'
+                    on_release: root.cancel()
+
+                

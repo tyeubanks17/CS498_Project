@@ -4,9 +4,13 @@ widgets.py
 
 Declarations of common Widgets
 '''
-from kivy.uix.widget import Widget
+import os, csv
+
+from kivy.lang import Builder
 from kivy.uix.image import Image
 from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.popup import Popup
+from kivy.properties import StringProperty
 
 class IconButton(ButtonBehavior, Image): 
     '''
@@ -15,3 +19,21 @@ class IconButton(ButtonBehavior, Image):
     https://kivy.org/doc/stable/api-kivy.uix.behaviors.html#module-kivy.uix.behaviors
     '''
     pass
+
+class FileChooserCsv(Popup):
+    '''
+    File chooser for importing/deleting set files
+    '''
+    default_path = StringProperty(os.path.join(os.path.expanduser("~"), "Downloads"))
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    #     self.selection = None
+        # Builder.load_file("./widgets.kv")
+
+    def set_selection(self):
+        self.selection = self.ids['filechooser'].selection
+        self.dismiss()
+
+    def cancel(self): 
+        self.selection = None
+        self.dismiss()
