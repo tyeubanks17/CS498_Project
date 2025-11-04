@@ -89,5 +89,5 @@ class Metrics:
             "Accuracy (%)": accuracy,
             "Problem Areas": sortedProblemAreas,
             "Total Time Spent (s)": self.totalTimeSpent,
-            "termStats": self.termStats
+            "termStats": dict(self.termStats)
         }
