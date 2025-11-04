@@ -37,7 +37,7 @@ class MenuScreen(Screen):
             if fc.selection:
                 csv_path = fc.selection[0]
                 print(f"Selected CSV: {csv_path}")
-                self.read_csv(csv_path)
+                rows = self.read_csv(csv_path)
         fc.bind(on_dismiss=read_csv_callback)
         fc.open()
 
@@ -48,16 +48,16 @@ class MenuScreen(Screen):
             with open(csv_path, 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 self.headers = reader.fieldnames
-                self.rows = list(reader)
+                rows = list(reader)
             print(f"Headers found: {self.headers}")
-            self.open_header_selector()
+            self.open_header_selector(rows)
 
         except Exception as e:
             popup = Popup(title="Error", content=Label(text=f"Error reading CSV:\n{e}"),
                             size_hint=(0.6, 0.4))
             popup.open()
 
-    def open_header_selector(self):
+    def open_header_selector(self, data):
         layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
         layout.add_widget(Label(text="Choose the column to use as 'term':"))
         spinner = Spinner(text=self.headers[0], values=self.headers, size_hint_y=None, height=44)
@@ -74,7 +74,7 @@ class MenuScreen(Screen):
         def confirm(instance):
             term_column = spinner.text
             popup.dismiss()
-            self.create_custom_csv(term_column)
+            self.create_custom_csv(data, term_column)
 
         def cancel(instance):
             popup.dismiss()
@@ -83,23 +83,25 @@ class MenuScreen(Screen):
         cancel_btn.bind(on_release=cancel)
         popup.open()
 
-    def create_custom_csv(self, term_column):
+    def create_custom_csv(self, data, term_column):
         try:
             file_name = os.path.basename(self.csv_path)
             script_dir = os.path.dirname(__file__)
-            sets_dir = os.path.join(script_dir, '..', 'sets')
+            sets_dir = os.path.join(script_dir, 'sets')
             os.makedirs(sets_dir, exist_ok=True)
+            print("made dir", sets_dir)
             new_csv_path = os.path.join(sets_dir, file_name)
             new_csv_path = os.path.abspath(new_csv_path)
             with open(new_csv_path, mode='w', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 writer.writerow(['term', 'definition'])
 
-                for row in self.rows:
+                for row in data:
                     term = row.get(term_column, '')
-                    definition_parts = [f"{k}: {v}" for k, v in row.items() if k != term_column and v]
+                    definition_parts = [v for k, v in row.items() if k != term_column and v]
                     definition = '; '.join(definition_parts)
                     writer.writerow([term, definition])
+                    print("row:", [term, definition])
 
             popup = Popup(title="Success",
                             content=Label(text=f"CSV created successfully!\nSaved to:\n{new_csv_path}"),
