@@ -1,4 +1,11 @@
 '''
+tracker.py
+
+A module to track study statistics across sessions. Helps maintain and manage the stats.json file.
+
+History:
+4 Nov 2025 - Created
+
 To do:
 - Implement delete stats for a set
 '''

@@ -1,11 +1,12 @@
 '''
-Reading on comma delimited csv file with a header rows "term" and "definition"
+metrics.py
 
-Metrics to track:
-- Time spent studying 
-    - Per session
-- Accuracy (number of correct definitions)
-- Problem areas (terms frequently answered incorrectly)
+A module to handle metrics per session. 
+
+History:
+30 October 2025 - Created
+4 Nov 2025 - Updated to integrate with tracker.py
+
 '''
 
 import csv, time
