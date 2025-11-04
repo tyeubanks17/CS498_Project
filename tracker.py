@@ -1,3 +1,8 @@
+'''
+To do:
+- Implement delete stats for a set
+'''
+
 import json
 
 class StatsTracker:
@@ -6,55 +11,55 @@ class StatsTracker:
         self.file_path = file_path
         # This holds all-time stats loaded from file
         # { set name: { term: {correct: 10, incorrect: 2} ... } }
-        self.allTimeStats = {}
+        self.all_time_stats = {}
         self.load_stats()
 
     # Load stats from the JSON file into allTimeStats
     def load_stats(self):
         try:
             with open(self.file_path, 'r') as f:
-                self.allTimeStats = json.load(f)
+                self.all_time_stats = json.load(f)
         except (FileNotFoundError):
-            print("Stats file not found at {self.file_path}, initializing new stats.")
-            self.allTimeStats = {}
+            print(f"Stats file not found at {self.file_path}, initializing new stats.")
+            self.all_time_stats = {}
         except (json.JSONDecodeError):
             print("Stats file is corrupted, initializing new stats.")
-            self.allTimeStats = {}
+            self.all_time_stats = {}
         except Exception as e:
             print(f"Error loading stats: {e}")
-            self.allTimeStats = {}
+            self.all_time_stats = {}
     
     def save_stats(self):
         # Write the allTimeStats dictionary back to the JSON file
         try:
-            with open(self.filePath, 'w') as f:
-                json.dump(self.allTimeStats, f, indent=2)
+            with open(self.file_path, 'w') as f:
+                json.dump(self.all_time_stats, f, indent=2)
         except Exception as e:
             print(f"Error saving stats: {e}")
 
     # Update stats after a study session
     # sessionMetrics is expected to be a dictionary with metrics
-    def update_stats(self, setName, sessionMetrics):
-        # Extract termStats from sessionMetrics
-        sessionTermData = sessionMetrics.get('termStats')
+    def update_stats(self, set_name, session_metrics):
+        # Extract term_stats from session_metrics
+        session_term_data = session_metrics.get('term_stats')
         # If no termStats found, nothing to update
-        if not sessionTermData:
+        if not session_term_data:
             print("No term stats found in session metrics, skipping update.")
             return
         # Ensure setName entry exists in allTimeStats
-        if setName not in self.allTimeStats:
-            self.allTimeStats[setName] = {}
+        if set_name not in self.all_time_stats:
+            self.all_time_stats[set_name] = {}
 
-        for term, stats in sessionTermData.items():
+        for term, stats in session_term_data.items():
             # Ensure term entry exists
-            if term not in self.allTimeStats[setName]:
-                self.allTimeStats[setName][term] = {"correct": 0, "incorrect": 0}
-            self.allTimeStats[setName][term]["correct"] += stats.get("correct", 0)
-            self.allTimeStats[setName][term]["incorrect"] += stats.get("incorrect", 0)
+            if term not in self.all_time_stats[set_name]:
+                self.all_time_stats[set_name][term] = {"correct": 0, "incorrect": 0}
+            self.all_time_stats[set_name][term]["correct"] += stats.get("correct", 0)
+            self.all_time_stats[set_name][term]["incorrect"] += stats.get("incorrect", 0)
 
         self.save_stats()
 
     # Retrieve stats for a specific set
-    def get_stats(self, setName):
-        return self.allTimeStats.get(setName, {})
+    def get_stats(self, set_name):
+        return self.all_time_stats.get(set_name, {})
 
