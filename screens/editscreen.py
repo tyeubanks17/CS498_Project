@@ -198,12 +198,16 @@ class EditScreen(Screen):
                     reader = csv.DictReader(f)
                     headers = reader.fieldnames
                     rows = [list(row.values()) for row in reader]
-                print(f"Headers found: {headers}")
                 # self.open_header_selector(rows)
                 header_select = CsvHeaderSelectPopup(options=headers)
                 def csv_select_callback(instance):
                     if header_select.selection:
+                        set_name = os.path.splitext(
+                            os.path.basename(fc.selection)
+                            )[0].replace('_', ' ')
+                        self.ids['titlefield'].text = set_name
                         self.populate_terms(rows)
+                        self.update_set()
                     else: 
                         raise ValueError("No term column selected")
                 header_select.bind(on_dismiss=csv_select_callback)
@@ -305,8 +309,6 @@ class EditScreen(Screen):
                     'term': term.ids['termfield'].text,
                     'definition': term.ids['defnfield'].text
                 }
-        print("Set path:",self.set.path)
-        print(self.set.data)
         
     def update_set_term(self, input_widget): 
         '''
