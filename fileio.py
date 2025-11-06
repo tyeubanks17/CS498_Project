@@ -44,7 +44,7 @@ def read_csv(csv_path):
         header_select = CsvHeaderSelectPopup(options=headers)
         def csv_select_callback(instance):
             if hasattr(header_select, 'selection') and header_select.selection:
-                create_custom_csv(file_name, rows, header_select.selection)
+                create_custom_csv(file_name, rows, headers.index(header_select.selection))
         header_select.bind(on_dismiss=csv_select_callback)
         header_select.open()
 
@@ -83,7 +83,7 @@ def load_csvs(directory="sets"):
     return sets
 
 
-def create_custom_csv(file_name, data, term_column):
+def create_custom_csv(file_name, data, term_column_idx):
     try:
         script_dir = os.path.dirname(__file__)
         sets_dir = os.path.join(script_dir, 'sets')
@@ -96,8 +96,8 @@ def create_custom_csv(file_name, data, term_column):
             writer.writerow(['term', 'definition'])
 
             for row in data:
-                term = row.get(term_column, '')
-                definition_parts = [v for k, v in row.items() if k != term_column and v]
+                term = row.pop(term_column_idx)
+                definition_parts = row
                 definition = '; '.join(definition_parts)
                 writer.writerow([term, definition])
 
@@ -114,7 +114,7 @@ def create_custom_csv(file_name, data, term_column):
     
 def delete_csv():
     script_dir = os.path.dirname(__file__)
-    sets_dir = os.path.abspath(os.path.join(script_dir, '..', 'sets'))
+    sets_dir = os.path.abspath(os.path.join(script_dir, 'sets'))
     os.makedirs(sets_dir, exist_ok=True)
     box = BoxLayout(orientation='vertical', spacing=20)
     filechooser = FileChooserListView(

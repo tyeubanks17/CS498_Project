@@ -122,7 +122,7 @@ class Set:
         '''
         os.makedirs(os.path.dirname(self.path), exist_ok=True)  # Make set directory if not exists
         with open(self.path, 'w') as file: 
-            writer = csv.DictWriter(file, fieldnames = self._Entry.__slots__, dialect='unix')
+            writer = csv.DictWriter(file, fieldnames = self._Entry.__slots__)
             writer.writeheader()
             writer.writerows(self.data)
 
