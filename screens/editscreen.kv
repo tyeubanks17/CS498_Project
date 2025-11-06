@@ -111,7 +111,7 @@
 
                 MenuBtn: 
                     text: 'Save'
-                    on_release: root.save_set()
+                    on_release: root.save_and_close()
             
             Label: 
                 text: 'Edit a set'
@@ -221,4 +221,4 @@
                     height: self.font_size + dp(25)
                     padding: dp(20)
                     pos_hint: { 'right': 1 }
-                    on_release: root.save_set()
+                    on_release: root.save_and_close()

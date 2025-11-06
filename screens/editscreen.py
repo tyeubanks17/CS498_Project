@@ -206,6 +206,7 @@ class EditScreen(Screen):
                             os.path.basename(fc.selection)
                             )[0].replace('_', ' ')
                         self.ids['titlefield'].text = set_name
+                        self.update_title(set_name, False)
                         self.populate_terms(rows)
                         self.update_set()
                     else: 
@@ -361,6 +362,11 @@ class EditScreen(Screen):
         self.update_set()
         self.set.save()
         return True
+    
+    def save_and_close(self): 
+        if self.save_set(): 
+            self.manager.transition.direction = "right"
+            self.manager.current = "menu"
 
     #region card_manipulation_methods
     
