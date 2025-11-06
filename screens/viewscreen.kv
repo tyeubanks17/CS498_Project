@@ -1,0 +1,121 @@
+<ViewScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        BoxLayout:
+            size_hint_y: None
+            height: "50dp"
+            spacing: 10
+
+            Button:
+                text: "Back to Menu"
+                on_release:
+                    root.manager.transition.direction = 'right'
+                    root.manager.current = 'menu'
+
+            Label:
+                text: "View Sets"
+                font_size: "22sp"
+                bold: True
+
+            Button:
+                text: "Import Set"
+                on_release: root.import_set()
+
+            Button:
+                text: "Create/Edit Set"
+                on_release:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'editSet'
+
+        BoxLayout:
+            spacing: 20
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_x: 0.3
+
+                Label:
+                    text: "Available Sets"
+                    font_size: "18sp"
+                    bold: True
+                    size_hint_y: None
+                    height: "40dp"
+
+                RecycleView:
+                    id: rv_sets
+                    viewclass: "Button"
+                    data: [{"text": s["name"], "on_release": lambda s=s: root.select_set(s)} for s in root.sets]
+
+                    RecycleBoxLayout:
+                        orientation: "vertical"
+                        default_size: None, dp(40)
+                        default_size_hint: 1, None
+                        size_hint_y: None
+                        height: self.minimum_height
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_x: 0.7
+
+                Label:
+                    text: root.selected_name if root.selected_name else "Select a set to view"
+                    font_size: "20sp"
+                    bold: True
+                    size_hint_y: None
+                    height: "40dp"
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: "30dp"
+                    padding: [5, 0]
+                    spacing: 10
+                    canvas.before:
+                        Color:
+                            rgba: 0.85, 0.85, 0.85, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    Label:
+                        text: "Term"
+                        bold: True
+                    Label:
+                        text: "Definition"
+                        bold: True
+
+                ScrollView:
+                    do_scroll_x: False
+
+                    RecycleView:
+                        id: rv_terms
+                        viewclass: "TermRow"
+                        data: root.rv_data
+
+                        RecycleBoxLayout:
+                            orientation: 'vertical'
+                            default_size: None, dp(30)
+                            default_size_hint: 1, None
+                            size_hint_y: None
+                            height: self.minimum_height
+
+<TermRow@BoxLayout>:
+    term: ""
+    definition: ""
+    size_hint_y: None
+    height: "30dp"
+    spacing: 10
+    padding: [5, 0]
+
+    Label:
+        text: root.term
+        text_size: self.size
+        halign: "left"
+        valign: "middle"
+
+    Label:
+        text: root.definition
+        text_size: self.size
+        halign: "left"
+        valign: "middle"

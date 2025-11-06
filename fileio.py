@@ -3,6 +3,9 @@ fileio.py
 04 Nov 2025
 
 Methods for creating popups and reading/deleting files
+History:
+04 November 2025 - Created
+06 November 2025 - Added load_csv functions for the set viewer
 '''
 import os, csv
 
@@ -46,6 +49,36 @@ def read_csv(csv_path):
         popup = Popup(title="Error", content=Label(text=f"Error reading CSV:\n{e}"),
                         size_hint=(0.6, 0.4))
         popup.open()
+
+def load_csvs(directory="sets"):
+    sets = []
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+        return sets
+    for files in os.listdir(directory):
+        if files.endswith(".csv"):
+            path = os.path.join(directory, files)
+            try:
+                with open(path, newline='', encoding='utf-8') as csvf:
+                    reader = csv.DictReader(csvf)
+                    terms, defs = [], []
+                    for row in reader:
+                        t = row.get("term", "").strip()
+                        d = row.get("definition", "").strip()
+                        if t or d:
+                            terms.append(t)
+                            defs.append(d)
+            except Exception as e:
+                print(f"[ERROR] Could not read {files}: {e}")
+                continue
+            if terms:
+                sets.append({
+                    "name": files.replace(".csv", ""),
+                    "terms": terms,
+                    "defs": defs,
+                })
+    return sets
+
 
 def create_custom_csv(file_name, data, term_column):
     try:
