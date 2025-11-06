@@ -1,66 +1,223 @@
 #:kivy 2.3
 # Definition for EditScreen
 
+<Button>:
+    width: self.texture_size[0]
+    padding: '20dp'
+
+<MenuBtn@Button>:
+    size_hint: None, 0.8
+
+<TermWidget>: # @BoxLayout
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: '10dp'
+    
+    BoxLayout: 
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: '10dp'
+
+        IconButton: 
+            id: upbtn
+            size_hint: None, None
+            pos_hint: { 'x': 0, 'center_y': 0.5 }
+            source: 'assets/noun-up-arrow-6250101.png'
+            width: '20dp'
+            height: '15dp'
+            on_release: root.get_editor().move_card_up(root)
+        IconButton: 
+            id: downbtn
+            size_hint: None, None
+            pos_hint: { 'x': 0, 'center_y': 0.5 }
+            source: 'assets/downArrow.png'
+            width: '20dp'
+            height: '15dp'
+            on_release: root.get_editor().move_card_down(root)
+        TermIndexInput: 
+            id: idxfield
+            size_hint: None, None
+            width: '25dp'
+            height: '25dp'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5 }
+
+        TermTextInput: 
+            id: termfield
+            size_hint_y: None
+            height: self.font_size + dp(15)
+            pos_hint: { 'top': 1 }
+            multiline: False
+            focus_next: defnfield
+            write_tab: False
+
+        TermTextInput: 
+            id: defnfield
+            size_hint_y: None
+            height: self.font_size*3 + dp(15)
+            pos_hint: { 'top': 1 }
+            multiline: True
+            write_tab: False
+
+        IconButton: 
+            id: delbtn
+            size_hint: None, None
+            pos_hint: { 'x': 0, 'center_y': 0.5 }
+            source: 'assets/noun-trash-3552557.png'
+            width: '17dp'
+            height: '20dp'
+            on_release: root.get_editor().delete_card(root)
+    
+    IconButton: 
+        id: insertbtn
+        size_hint: None, None
+        pos_hint: { 'center_x': 0.5, 'center_y': 0.5 }
+        source: 'assets/noun-plus-4911233.png'
+        width: '20dp'
+        height: '20dp'
+        on_release: root.insert_card_below()
+
 <EditScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 20
+        padding: '10dp'
 
         FloatLayout: 
+            id: menubar
             orientation: 'horizontal'
             size_hint_y: None
             height: '50dp'
+            padding: '20dp'
 
-            Button: 
+            MenuBtn: 
                 text: 'Back to menu'
-                size_hint_x: None
-                width: self.texture_size[0]
-                padding: '20dp'
-                halign: 'left'
                 pos_hint: { 'x': 0, 'center_y': 0.5}
                 on_release: 
                     root.manager.transition.direction = 'right'
                     root.manager.current = 'menu'
 
+            BoxLayout: 
+                id: menubarright
+                orientation: 'horizontal'
+                pos_hint: { 'right': 1, 'center_y': 0.6 }
+                size_hint_x: None
+                width: self.minimum_width
+                spacing: '10dp'
+
+                MenuBtn: 
+                    text: 'Import'
+
+                MenuBtn: 
+                    text: 'Save'
+                    on_release: root.save_set()
             
             Label: 
                 text: 'Edit a set'
+                bold: True
+                font_size: '24dp'
                 size_hint_x: None
                 width: self.texture_size[0]
                 padding: '20dp'
                 pos_hint: { 'center_x': 0.5, 'center_y': 0.5}
 
+            Label: 
+                id: errmsg
+                pos_hint: { 'top': 0.2, 'center_x': 0.5 }
+                color: 1, 0.4, 0.2, 1
+                bold: True
+                text: "Err msg goes here."
+
         ScrollView: 
             doScrollX: False
             doScrollY: True
 
-            GridLayout: 
-                cols: 1
+            BoxLayout:
+                id: content
+                orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
+                spacing: '20dp'
+
+                Widget: 
+                    id: topspacer
+                    size_hint_y: None
+                    height: '10dp'
+
+                GridLayout: 
+                    id: topmatter
+                    cols: 2
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '20dp'
+
+                    BoxLayout: 
+                        id: titledesc
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: '15dp'
+
+                        Label: 
+                            text: 'Title:'
+                            text_size: self.size
+                            halign: 'left'
+                        SetTitleInput: 
+                            id: titlefield
+                            size_hint_y: None
+                            height: self.font_size + dp(15)
+                            multiline: False
+                            write_tab: False
+                            focus_next: descfield
+                            on_focus: root.update_title(self.text, self.focus)
+                        Label: 
+                            text: 'Description:'
+                            text_size: self.size
+                            halign: 'left'
+                        TextInput: 
+                            id: descfield
+                            size_hint_y: None
+                            height: self.font_size * 3 + dp(15)
+                            multiline: True
+                            write_tab: False
+
+                    Label: 
+                        text: 'Properties:'
+                        text_size: self.size
+                        halign: 'left'
+                        valign: 'top'
+
+                BoxLayout: 
+                    id: termheaders
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '20dp'
+
+                    Label:
+                        text: 'Term'
+                    Label: 
+                        text: 'Definition'
+
+                BoxLayout: 
+                    id: termlayout
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '20dp'
 
                 Button: 
-                    size_hint_y: None
-                    text: 'Create a set'
-                    height: '500dp'
-                    on_release: 
-                        root.manager.current = 'editSet'
-                        root.open_filechooser()
-                
-                Button: 
-                    size_hint_y: None
-                    text: 'Delete a set'
-                    height: '500dp'
-                    on_release: 
-                        root.manager.current = 'editSet'
-                        root.delete_csv()
+                    text: 'Add a card'
+                    size_hint: None, None
+                    height: self.font_size + dp(25)
+                    padding: dp(20)
+                    pos_hint: { 'center_x': 0.5}
+                    on_release: root.add_card()
 
                 Button: 
-                    size_hint_y: None
-                    text: 'Page button 2'
-                    height: '500dp'
-
-                Button: 
-                    size_hint_y: None
-                    text: 'Page button 3'
-                    height: '500dp'
+                    text: 'Save'
+                    size_hint: None, None
+                    height: self.font_size + dp(25)
+                    padding: dp(20)
+                    pos_hint: { 'right': 1 }
+                    on_release: root.save_set()

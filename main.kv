@@ -25,17 +25,21 @@
                 Button: 
                     size_hint_y: None
                     text: 'Create a set'
-                    height: '500dp'
+                    height: '100dp'
                     on_release: 
                         root.manager.transition.direction = 'left'
                         root.manager.current = 'editSet'
 
                 Button: 
                     size_hint_y: None
-                    text: 'Page button 2'
-                    height: '500dp'
+                    text: 'Open a set'
+                    height: '100dp'
+                    on_release:
+                        root.open_filechooser()
 
                 Button: 
                     size_hint_y: None
-                    text: 'Page button 3'
-                    height: '500dp'
+                    text: 'Delete a set'
+                    height: '100dp'
+                    on_release: 
+                        root.delete_csv()

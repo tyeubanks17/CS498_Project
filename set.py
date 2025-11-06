@@ -9,7 +9,7 @@ History:
 21 Oct 2025 - Created, v1.0
 '''
 
-import os, csv
+import os, csv, re
 
 class Set: 
     '''
@@ -27,6 +27,7 @@ class Set:
     '''
     # Constants
     ACCEPT_FILETYPES = [".csv"]
+    ILLEGAL_CHARS_RE = re.compile('[/\\<>:"|?*]')
 
     # Entry schema
     class _Entry: 
@@ -59,7 +60,7 @@ class Set:
         def __repr__(self):
             return str({k: getattr(self, k) for k in self.__slots__})
 
-    def __init__(self, init_data: list = None):
+    def __init__(self, save_file_path, init_data: list = None):
         '''
         Set class constructor
         '''
@@ -71,6 +72,8 @@ class Set:
             self.data = [self._Entry(ent) for ent in init_data]
         else: 
             self.data = []
+
+        self.path = save_file_path
 
     @classmethod
     def from_file(cls, path: str):
@@ -98,3 +101,23 @@ class Set:
                 return cls([row for row in csvData])
         else: 
             raise NotImplementedError(f"Handler for filetype {ext} not yet implemented.")
+
+    def save(self): 
+        '''
+        Save current state of Set to specified filepath
+        '''
+        with open(self.path, 'w') as file: 
+            writer = csv.DictWriter(file, fieldnames = self._Entry.__slots__)
+            writer.writeheader()
+            writer.writerows(self.data)
+
+    @classmethod
+    def to_set_path(cls, set_name): 
+        '''
+        Transform the provided string into the path to
+        a csv file for a set with that name.
+        Paths are relative to project root
+        '''
+        if re.match(cls.ILLEGAL_CHARS_RE, set_name): 
+            raise ValueError("Set name contains illegal characters")
+        return f"./sets/{set_name}.csv"
