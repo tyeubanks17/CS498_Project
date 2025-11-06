@@ -22,6 +22,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
 from kivy.graphics import Color
 from kivy.graphics.boxshadow import BoxShadow
+from kivy.properties import BooleanProperty
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.lang import Builder
@@ -54,6 +55,8 @@ class TermTextInput(TextInput):
     Custom TextInput class to allow hijacking tab
     navigation to add new card
     '''
+    highlighted = BooleanProperty(defaultvalue=False)
+
     def on_focus(self, instance, value):
         '''
         Scroll to text box when focused
@@ -152,33 +155,10 @@ class TermWidget(BoxLayout):
         e.insert_card(TermWidget(), selfidx)
 
     def highlight_term(self, value): 
-        self.highlight_field(self.ids['termfield'], value)
+        self.ids['termfield'].highlighted = value
 
     def highlight_defn(self, value): 
-        self.highlight_field(self.ids['defnfield'], value)
-
-    def highlight_field(self, field_widget, value): 
-        '''
-        Highlights or de-highlights the specified field, 
-        depending on value parameter
-        '''
-        print("Highlight field", field_widget, value)
-        with field_widget.canvas.before: 
-            BoxShadow(
-                pos=field_widget.pos,
-                size=field_widget.size,
-                offset=(0,0),
-                # spread_radius=(dp(10), dp(10)),
-                # border_radius=(dp(10), dp(10), dp(10), dp(10)),
-                # blur_radius=dp(50),
-                inset=True
-            )
-            if value: 
-                # Add highlight
-                Color(1, 1, 0, 0.6)
-            else: 
-                # Remove highlight
-                Color(0, 0, 0, 0)
+        self.ids['defnfield'].highlighted = value
 
 #endregion
 
@@ -190,6 +170,7 @@ class EditScreen(Screen):
     # Flag duplicates?
     FLAG_DUP_TERMS = True
     FLAG_DUP_DEFN = True
+    FLAG_BLANK = True
 
     Builder.load_file("./screens/editscreen.kv")
     Config.set('graphics', 'resizable', True)
@@ -599,25 +580,19 @@ class EditScreen(Screen):
         terms = self.get_terms()
         terms_count = Counter(self.set.terms())
         values_count = Counter(self.set.definitions())
-        print(terms_count)
-        print(values_count)
 
         # Highlight term/definitions that appear more than once
         if self.FLAG_DUP_TERMS: 
             for tw in terms: 
-                if tw.ids['termfield'].text == '': 
-                    # Highlight empty fields regardless
-                    tw.highlight_term(True)
+                if tw.ids['termfield'].text == '' and not self.FLAG_BLANK: 
                     continue
-                assert terms_count[tw.ids['termfield'].text] > 0
-                tw.highlight_term(values_count[tw.ids['termfield'].text] > 1)  # If term field contents appear more than once, add highlight
+                assert terms_count[tw.ids['termfield'].text] > 0 or tw.ids['termfield'].text == ''
+                tw.highlight_term(terms_count[tw.ids['termfield'].text] > 1)  # If term field contents appear more than once, add highlight
         if self.FLAG_DUP_DEFN:
             for tw in terms: 
-                if tw.ids['defnfield'].text == '': 
-                    # Highlight empty fields regardless
-                    tw.highlight_defn(True)
+                if tw.ids['defnfield'].text == '' and not self.FLAG_BLANK: 
                     continue
-                assert terms_count[tw.ids['defnfield'].text] > 0
+                assert values_count[tw.ids['defnfield'].text] > 0 or tw.ids['defnfield'].text == ''
                 tw.highlight_defn(values_count[tw.ids['defnfield'].text] > 1)  # If definition field contents appear more than once, add highlight
 
 #endregion
