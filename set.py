@@ -102,6 +102,20 @@ class Set:
         else: 
             raise NotImplementedError(f"Handler for filetype {ext} not yet implemented.")
 
+    def terms(self): 
+        '''
+        Getter method
+        Returns list of terms in set
+        '''
+        return [e['term'] for e in self.data]
+
+    def definitions(self): 
+        '''
+        Getter method
+        Returns list of definitions in set
+        '''
+        return [e['definition'] for e in self.data]
+
     def save(self): 
         '''
         Save current state of Set to specified filepath

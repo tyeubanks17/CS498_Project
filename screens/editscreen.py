@@ -7,8 +7,12 @@ History:
 22 Oct 2025 - Created
 23 Oct 2025 - Add term/definition fields, tab navigation
 27 Oct 2025 - Title/description fields; delete, reorder terms
+30 Oct 2025 - Card insertion, indexing
+05 Nov 2025 - Import from CSV
+06 Nov 2025 - Duplicate term/definition highlighting
 '''
 import os, re, csv
+from collections import Counter
 
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
@@ -16,6 +20,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
+from kivy.graphics import Color
+from kivy.graphics.boxshadow import BoxShadow
+from kivy.properties import BooleanProperty
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.lang import Builder
@@ -48,6 +55,8 @@ class TermTextInput(TextInput):
     Custom TextInput class to allow hijacking tab
     navigation to add new card
     '''
+    highlighted = BooleanProperty(defaultvalue=False)
+
     def on_focus(self, instance, value):
         '''
         Scroll to text box when focused
@@ -137,7 +146,6 @@ class TermWidget(BoxLayout):
         es = find_ancestor_of_type(self, EditScreen)
         es.update_set_term(self)
 
-
     def insert_card_below(self): 
         '''
         Inserts a card below self in the editor
@@ -146,10 +154,23 @@ class TermWidget(BoxLayout):
         selfidx = e.get_terms().index(self)
         e.insert_card(TermWidget(), selfidx)
 
+    def highlight_term(self, value): 
+        self.ids['termfield'].highlighted = value
+
+    def highlight_defn(self, value): 
+        self.ids['defnfield'].highlighted = value
+
 #endregion
 
+#region EditScreen
+
 class EditScreen(Screen):
+    # Constants
     NUM_TERMS_ON_LOAD = 2
+    # Flag duplicates?
+    FLAG_DUP_TERMS = True
+    FLAG_DUP_DEFN = True
+    FLAG_BLANK = True
 
     Builder.load_file("./screens/editscreen.kv")
     Config.set('graphics', 'resizable', True)
@@ -163,6 +184,20 @@ class EditScreen(Screen):
         for _ in range(self.NUM_TERMS_ON_LOAD):
             self.add_card()
 
+    def reset_editor(self): 
+        '''
+        Reset editor when leaving page
+        '''
+        # Remove existing cards
+        terms = self.get_terms()
+        while len(terms) > 0: 
+            self.ids['termlayout'].remove_widget(terms[0])
+            terms = self.get_terms()
+        self.ids['titlefield'].text = ""
+        self.ids['descfield'].text = ""
+        for _ in range(self.NUM_TERMS_ON_LOAD):
+            self.add_card()
+        
     def on_pre_enter(self):
         # To execute on screen load
         # Reset screen here or on_leave?
@@ -179,6 +214,8 @@ class EditScreen(Screen):
         Clear err msg
         '''
         self.ids['errmsg'].text = ""
+
+    #region imports
 
     def csv_import_picker(self):
         '''
@@ -244,6 +281,10 @@ class EditScreen(Screen):
             if len(row) != 2: 
                 raise ValueError("Too many columns in provided data to populate terms")
             self.add_card(*row)
+
+    #endregion
+
+    #region set_data
 
     def update_title(self, text_content, focused): 
         '''
@@ -342,9 +383,8 @@ class EditScreen(Screen):
                 'term': input_widget.ids['termfield'].text,
                 'definition': input_widget.ids['defnfield'].text
             }
-        print("Set path:",self.set.path)
-        print(self.set.data)
-        
+        # Check for duplicates
+        self.highlight_duplicates()
 
     def save_set(self):
         '''
@@ -370,8 +410,12 @@ class EditScreen(Screen):
         if self.save_set(): 
             self.manager.transition.direction = "right"
             self.manager.current = "menu"
+            # Reset editor interface
+            self.reset_editor()
 
-    #region card_manipulation_methods
+    #endregion
+
+    #region card_manipulation
     
     def get_terms(self):
         return self.ids['termlayout'].children
@@ -527,3 +571,31 @@ class EditScreen(Screen):
             terms[idx].ids['idxfield'].text = str(len(terms) - idx)
 
     #endregion
+
+    def highlight_duplicates(self): 
+        '''
+        Highlight duplicate terms in set
+        '''
+        # If no valid set, ask for title (should initialize set)
+        if self.set is None: 
+            self.set_err("Invalid title.")
+            return
+        terms = self.get_terms()
+        terms_count = Counter(self.set.terms())
+        values_count = Counter(self.set.definitions())
+
+        # Highlight term/definitions that appear more than once
+        if self.FLAG_DUP_TERMS: 
+            for tw in terms: 
+                if tw.ids['termfield'].text == '' and not self.FLAG_BLANK: 
+                    continue
+                assert terms_count[tw.ids['termfield'].text] > 0 or tw.ids['termfield'].text == ''
+                tw.highlight_term(terms_count[tw.ids['termfield'].text] > 1)  # If term field contents appear more than once, add highlight
+        if self.FLAG_DUP_DEFN:
+            for tw in terms: 
+                if tw.ids['defnfield'].text == '' and not self.FLAG_BLANK: 
+                    continue
+                assert values_count[tw.ids['defnfield'].text] > 0 or tw.ids['defnfield'].text == ''
+                tw.highlight_defn(values_count[tw.ids['defnfield'].text] > 1)  # If definition field contents appear more than once, add highlight
+
+#endregion
