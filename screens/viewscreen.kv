@@ -1,3 +1,6 @@
+#:kivy 2.3
+# Definition for viewscreen
+
 <ViewScreen>:
     BoxLayout:
         orientation: "vertical"
@@ -19,14 +22,23 @@
                 text: "View Sets"
                 font_size: "22sp"
                 bold: True
+                size_hint_x: 2
+
+            Button:
+                text: "New Set"
+                on_release:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'editSet'
 
             Button:
                 text: "Import Set"
                 on_release: root.import_set()
 
             Button:
-                text: "Create/Edit Set"
+                text: "Edit Set"
                 on_release:
+                    es = root.manager.get_screen('editSet')
+                    es.load_set(root.selected_name)
                     root.manager.transition.direction = 'left'
                     root.manager.current = 'editSet'
 

@@ -180,6 +180,7 @@ class EditScreen(Screen):
         # Initialize Set instance for current editor window
         # Defaults to new set instance (created on title entry), but may be passed in as param
         self.set = set_
+        self.overwrite = False
         # Add initial term objects on load
         for _ in range(self.NUM_TERMS_ON_LOAD):
             self.add_card()
@@ -188,6 +189,7 @@ class EditScreen(Screen):
         '''
         Reset editor when leaving page
         '''
+        self.overwrite = False
         # Remove existing cards
         terms = self.get_terms()
         while len(terms) > 0: 
@@ -217,6 +219,23 @@ class EditScreen(Screen):
 
     #region imports
 
+    def load_set(self, set_name): 
+        set_path = Set.to_set_path(set_name)
+        self.overwrite = True
+        # Read CSV
+        with open(set_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f, fieldnames=('term', 'definition'))
+            headers = reader.fieldnames
+            rows = [list(row.values()) for row in reader]
+            if rows[0] == list(reader.fieldnames): 
+                # Ignore first row if header row
+                rows.pop(0)
+        self.ids['titlefield'].text = set_name
+        self.update_title(set_name, False)
+        self.populate_terms(rows)
+        self.update_set()
+        
+
     def csv_import_picker(self):
         '''
         Create a set based on data from a user-selected
@@ -241,7 +260,16 @@ class EditScreen(Screen):
                 # self.open_header_selector(rows)
                 header_select = CsvHeaderSelectPopup(options=headers)
                 def csv_select_callback(instance):
+                    nonlocal rows
                     if header_select.selection:
+                        print("Term header:", header_select.selection)
+                        hdr_idx = headers.index(header_select.selection)
+                        if hdr_idx != 0:
+                            # Reorder data so that term column comes first
+                            indices = list(range(len(headers)))
+                            indices.pop(hdr_idx)
+                            indices.insert(0, hdr_idx)
+                            rows = [[row[idx] for idx in indices] for row in rows]
                         set_name = os.path.splitext(
                             os.path.basename(fc.selection)
                             )[0].replace('_', ' ')
@@ -303,8 +331,8 @@ class EditScreen(Screen):
             if self.set is None: 
                 # Title contents should not contain illegal characters
                 assert not re.match(Set.ILLEGAL_CHARS_RE, text_content)
-                # Raise error if file already exists
-                if os.path.exists(save_file_path): 
+                # Raise error if file already exists - if not in overwrite mode
+                if os.path.exists(save_file_path) and not self.overwrite: 
                     self.set_err("A set with this name already exists!")
                     return False
                 # Initialize set
@@ -409,7 +437,7 @@ class EditScreen(Screen):
     def save_and_close(self): 
         if self.save_set(): 
             self.manager.transition.direction = "right"
-            self.manager.current = "menu"
+            self.manager.current = "menu" if not self.overwrite else "viewSet"
             # Reset editor interface
             self.reset_editor()
 
