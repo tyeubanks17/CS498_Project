@@ -33,7 +33,6 @@ def read_csv(csv_path):
             reader = csv.DictReader(f, fieldnames=('term', 'definition'))
             headers = reader.fieldnames
             rows = [list(row.values()) for row in reader]
-            print(rows[0])
             if rows[0] == list(reader.fieldnames): 
                 # Ignore first row if header row
                 rows.pop(0)
@@ -68,7 +67,6 @@ def create_custom_csv(file_name, data, term_column):
                 definition_parts = [v for k, v in row.items() if k != term_column and v]
                 definition = '; '.join(definition_parts)
                 writer.writerow([term, definition])
-                print("row:", [term, definition])
 
         popup = Popup(title="Success",
                         content=Label(text=f"CSV created successfully!\nSaved to:\n{new_csv_path}"),
