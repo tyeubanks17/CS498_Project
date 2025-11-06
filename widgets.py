@@ -31,7 +31,7 @@ class FileChooserCsv(Popup):
         # Builder.load_file("./widgets.kv")
 
     def set_selection(self):
-        self.selection = self.ids['filechooser'].selection
+        self.selection = self.ids['filechooser'].selection[0]
         self.dismiss()
 
     def cancel(self): 
