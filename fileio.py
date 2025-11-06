@@ -18,8 +18,8 @@ from widgets import FileChooserCsv, CsvHeaderSelectPopup
 def open_filechooser():
     fc = FileChooserCsv()
     def read_csv_callback(instance):
-        if fc.selection:
-            csv_path = fc.selection[0]
+        if hasattr(fc, 'selection') and fc.selection:
+            csv_path = fc.selection
             print(f"Selected CSV: {csv_path}")
             rows = read_csv(csv_path)
     fc.bind(on_dismiss=read_csv_callback)
@@ -37,7 +37,7 @@ def read_csv(csv_path):
         # self.open_header_selector(rows)
         header_select = CsvHeaderSelectPopup(options=headers)
         def csv_select_callback(instance):
-            if header_select.selection:
+            if hasattr(header_select, 'selection') and header_select.selection:
                 create_custom_csv(file_name, rows, header_select.selection)
         header_select.bind(on_dismiss=csv_select_callback)
         header_select.open()
