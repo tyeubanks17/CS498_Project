@@ -55,8 +55,10 @@
 # SDLC Rules
 The set of best practices to follow when contributing to the project. These are mostly just to keep people from stepping on each other's toes while developing.
 
-1) Keep your work in your own branch.
-Each feature should get its own branch
+1) Don't commit directly to main. Keep your work in your own branch.
+Each feature should get its own branch and be merged into `main` via Pull Request after someone else has reviewed it.
+If you are changing files that you know another person is working on, ask them to review your code before merging.
+This gives us the chance to review each other's code and discuss potential conflicts. 
 
 2) Each file should begin with a docstring
 File docstrings should list: 
