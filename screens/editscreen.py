@@ -7,8 +7,12 @@ History:
 22 Oct 2025 - Created
 23 Oct 2025 - Add term/definition fields, tab navigation
 27 Oct 2025 - Title/description fields; delete, reorder terms
+30 Oct 2025 - Card insertion, indexing
+05 Nov 2025 - Import from CSV
+06 Nov 2025 - Duplicate term/definition highlighting
 '''
 import os, re, csv
+from collections import Counter
 
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
@@ -16,6 +20,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
+from kivy.graphics import Color
+from kivy.graphics.boxshadow import BoxShadow
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.lang import Builder
@@ -137,7 +143,6 @@ class TermWidget(BoxLayout):
         es = find_ancestor_of_type(self, EditScreen)
         es.update_set_term(self)
 
-
     def insert_card_below(self): 
         '''
         Inserts a card below self in the editor
@@ -146,10 +151,45 @@ class TermWidget(BoxLayout):
         selfidx = e.get_terms().index(self)
         e.insert_card(TermWidget(), selfidx)
 
+    def highlight_term(self, value): 
+        self.highlight_field(self.ids['termfield'], value)
+
+    def highlight_defn(self, value): 
+        self.highlight_field(self.ids['defnfield'], value)
+
+    def highlight_field(self, field_widget, value): 
+        '''
+        Highlights or de-highlights the specified field, 
+        depending on value parameter
+        '''
+        print("Highlight field", field_widget, value)
+        with field_widget.canvas.before: 
+            BoxShadow(
+                pos=field_widget.pos,
+                size=field_widget.size,
+                offset=(0,0),
+                # spread_radius=(dp(10), dp(10)),
+                # border_radius=(dp(10), dp(10), dp(10), dp(10)),
+                # blur_radius=dp(50),
+                inset=True
+            )
+            if value: 
+                # Add highlight
+                Color(1, 1, 0, 0.6)
+            else: 
+                # Remove highlight
+                Color(0, 0, 0, 0)
+
 #endregion
 
+#region EditScreen
+
 class EditScreen(Screen):
+    # Constants
     NUM_TERMS_ON_LOAD = 2
+    # Flag duplicates?
+    FLAG_DUP_TERMS = True
+    FLAG_DUP_DEFN = True
 
     Builder.load_file("./screens/editscreen.kv")
     Config.set('graphics', 'resizable', True)
@@ -179,6 +219,8 @@ class EditScreen(Screen):
         Clear err msg
         '''
         self.ids['errmsg'].text = ""
+
+    #region imports
 
     def csv_import_picker(self):
         '''
@@ -241,6 +283,10 @@ class EditScreen(Screen):
             if len(row) != 2: 
                 raise ValueError("Too many columns in provided data to populate terms")
             self.add_card(*row)
+
+    #endregion
+
+    #region set_data
 
     def update_title(self, text_content, focused): 
         '''
@@ -339,9 +385,8 @@ class EditScreen(Screen):
                 'term': input_widget.ids['termfield'].text,
                 'definition': input_widget.ids['defnfield'].text
             }
-        print("Set path:",self.set.path)
-        print(self.set.data)
-        
+        # Check for duplicates
+        self.highlight_duplicates()
 
     def save_set(self):
         '''
@@ -368,7 +413,9 @@ class EditScreen(Screen):
             self.manager.transition.direction = "right"
             self.manager.current = "menu"
 
-    #region card_manipulation_methods
+    #endregion
+
+    #region card_manipulation
     
     def get_terms(self):
         return self.ids['termlayout'].children
@@ -524,3 +571,37 @@ class EditScreen(Screen):
             terms[idx].ids['idxfield'].text = str(len(terms) - idx)
 
     #endregion
+
+    def highlight_duplicates(self): 
+        '''
+        Highlight duplicate terms in set
+        '''
+        # If no valid set, ask for title (should initialize set)
+        if self.set is None: 
+            self.set_err("Invalid title.")
+            return
+        terms = self.get_terms()
+        terms_count = Counter(self.set.terms())
+        values_count = Counter(self.set.definitions())
+        print(terms_count)
+        print(values_count)
+
+        # Highlight term/definitions that appear more than once
+        if self.FLAG_DUP_TERMS: 
+            for tw in terms: 
+                if tw.ids['termfield'].text == '': 
+                    # Highlight empty fields regardless
+                    tw.highlight_term(True)
+                    continue
+                assert terms_count[tw.ids['termfield'].text] > 0
+                tw.highlight_term(values_count[tw.ids['termfield'].text] > 1)  # If term field contents appear more than once, add highlight
+        if self.FLAG_DUP_DEFN:
+            for tw in terms: 
+                if tw.ids['defnfield'].text == '': 
+                    # Highlight empty fields regardless
+                    tw.highlight_defn(True)
+                    continue
+                assert terms_count[tw.ids['defnfield'].text] > 0
+                tw.highlight_defn(values_count[tw.ids['defnfield'].text] > 1)  # If definition field contents appear more than once, add highlight
+
+#endregion
