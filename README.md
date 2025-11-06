@@ -11,6 +11,6 @@ Project for a study app to run on local machines
 - Install using `pip install "kivy[base]" kivy_examples`
 - Demo at `.venv/share/kivy-examples/demo/showcase/main.py`
 
-Notes:
-- Only supported through Python 3.13
-- N.B. has [custom Property implementation](https://kivy.org/doc/stable/gettingstarted/properties.html)
+  Notes:
+  - Only supported through Python 3.13
+  - N.B. has [custom Property implementation](https://kivy.org/doc/stable/gettingstarted/properties.html)
