@@ -203,6 +203,20 @@ class EditScreen(Screen):
         for _ in range(self.NUM_TERMS_ON_LOAD):
             self.add_card()
 
+    def reset_editor(self): 
+        '''
+        Reset editor when leaving page
+        '''
+        # Remove existing cards
+        terms = self.get_terms()
+        while len(terms) > 0: 
+            self.ids['termlayout'].remove_widget(terms[0])
+            terms = self.get_terms()
+        self.ids['titlefield'].text = ""
+        self.ids['descfield'].text = ""
+        for _ in range(self.NUM_TERMS_ON_LOAD):
+            self.add_card()
+        
     def on_pre_enter(self):
         # To execute on screen load
         # Reset screen here or on_leave?
@@ -412,6 +426,8 @@ class EditScreen(Screen):
         if self.save_set(): 
             self.manager.transition.direction = "right"
             self.manager.current = "menu"
+            # Reset editor interface
+            self.reset_editor()
 
     #endregion
 
