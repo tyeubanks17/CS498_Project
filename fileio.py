@@ -33,9 +33,13 @@ def read_csv(csv_path):
     file_name = os.path.basename(csv_path)
     try:
         with open(csv_path, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
+            reader = csv.DictReader(f, fieldnames=('term', 'definition'))
             headers = reader.fieldnames
-            rows = list(reader)
+            rows = [list(row.values()) for row in reader]
+            print(rows[0])
+            if rows[0] == list(reader.fieldnames): 
+                # Ignore first row if header row
+                rows.pop(0)
         print(f"Headers found: {headers}")
         # self.open_header_selector(rows)
         header_select = CsvHeaderSelectPopup(options=headers)
