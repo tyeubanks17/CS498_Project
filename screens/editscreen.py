@@ -235,7 +235,6 @@ class EditScreen(Screen):
                     reader = csv.DictReader(f, fieldnames=('term', 'definition'))
                     headers = reader.fieldnames
                     rows = [list(row.values()) for row in reader]
-                    print(rows[0])
                     if rows[0] == list(reader.fieldnames): 
                         # Ignore first row if header row
                         rows.pop(0)

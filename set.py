@@ -121,7 +121,6 @@ class Set:
         Save current state of Set to specified filepath
         '''
         os.makedirs(os.path.dirname(self.path), exist_ok=True)  # Make set directory if not exists
-        print(self.data)
         with open(self.path, 'w') as file: 
             writer = csv.DictWriter(file, fieldnames = self._Entry.__slots__, dialect='unix')
             writer.writeheader()
