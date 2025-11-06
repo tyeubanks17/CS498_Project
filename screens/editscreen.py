@@ -8,19 +8,20 @@ History:
 23 Oct 2025 - Add term/definition fields, tab navigation
 27 Oct 2025 - Title/description fields; delete, reorder terms
 '''
-import os, re
+import os, re, csv
 
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.label import Label
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.config import Config
 
-from widgets import IconButton
+from widgets import *
 
 from set import Set
 
@@ -179,6 +180,67 @@ class EditScreen(Screen):
         '''
         self.ids['errmsg'].text = ""
 
+    def csv_import_picker(self):
+        '''
+        Create a set based on data from a user-selected
+        CSV file
+        '''
+        fc = FileChooserCsv()
+        def on_select_callback(instance):
+            '''Code to call when file is selected'''
+            if fc.selection is None:
+                return
+
+            # If file selected, load file into GUI
+            # Read csv
+            try:
+                with open(fc.selection, 'r', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    headers = reader.fieldnames
+                    rows = [list(row.values()) for row in reader]
+                # self.open_header_selector(rows)
+                header_select = CsvHeaderSelectPopup(options=headers)
+                def csv_select_callback(instance):
+                    if header_select.selection:
+                        set_name = os.path.splitext(
+                            os.path.basename(fc.selection)
+                            )[0].replace('_', ' ')
+                        self.ids['titlefield'].text = set_name
+                        self.populate_terms(rows)
+                        self.update_set()
+                    else: 
+                        raise ValueError("No term column selected")
+                header_select.bind(on_dismiss=csv_select_callback)
+                header_select.open()
+
+            except Exception as e:
+                popup = Popup(title="Error", content=Label(text=f"Error reading CSV:\n{e}"),
+                                size_hint=(0.6, 0.4))
+                popup.open()
+            
+        fc.bind(on_dismiss=on_select_callback)
+        fc.open()
+    
+    def populate_terms(self, data): 
+        '''
+        Populate term cards from provided data
+
+        Data argument should be a list of 2-element
+        lists, where the first element is the term
+        and the second is the definiton. 
+        '''
+        # Remove existing cards
+        terms = self.get_terms()
+        while len(terms) > 0: 
+            self.ids['termlayout'].remove_widget(terms[0])
+            terms = self.get_terms()
+
+        # Populate cards from data
+        for row in data: 
+            if len(row) != 2: 
+                raise ValueError("Too many columns in provided data to populate terms")
+            self.add_card(*row)
+
     def update_title(self, text_content, focused): 
         '''
         Update filepath of Set instance when Title 
@@ -247,8 +309,6 @@ class EditScreen(Screen):
                     'term': term.ids['termfield'].text,
                     'definition': term.ids['defnfield'].text
                 }
-        print("Set path:",self.set.path)
-        print(self.set.data)
         
     def update_set_term(self, input_widget): 
         '''
@@ -307,7 +367,7 @@ class EditScreen(Screen):
     def get_terms(self):
         return self.ids['termlayout'].children
 
-    def add_card(self): 
+    def add_card(self, term="", defn=""): 
         '''
         Add a blank flashcard to the editor interface
         Inserts at end of termlayout
@@ -319,6 +379,8 @@ class EditScreen(Screen):
         else: 
             self.ids['descfield'].focus_next = tw.ids['termfield']
         tw.ids['idxfield'].text = str(len(terms) + 1)
+        tw.ids['termfield'].text = term
+        tw.ids['defnfield'].text = defn
         self.ids['termlayout'].add_widget(tw)
 
     def delete_card(self, card: TermWidget):

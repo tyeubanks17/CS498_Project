@@ -107,6 +107,7 @@
 
                 MenuBtn: 
                     text: 'Import'
+                    on_release: root.csv_import_picker()
 
                 MenuBtn: 
                     text: 'Save'
@@ -126,7 +127,7 @@
                 pos_hint: { 'top': 0.2, 'center_x': 0.5 }
                 color: 1, 0.4, 0.2, 1
                 bold: True
-                text: "Err msg goes here."
+                # text: "Err msg goes here."
 
         ScrollView: 
             doScrollX: False
