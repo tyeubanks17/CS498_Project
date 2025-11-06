@@ -5,12 +5,14 @@ The central manager for our study app.
 
 History: 
 22 Oct 2025 - Created, add terrible mock menu
+6 November 2025 - Added the set viewer
 '''
 from kivy.lang import Builder
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 from screens.editscreen import EditScreen
+from screens.viewscreen import ViewScreen
 import fileio
 
 class MenuScreen(Screen):
@@ -37,6 +39,7 @@ class StudyApp(App):
         sm = ScreenManager()
         sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(EditScreen(name='editSet'))
+        sm.add_widget(ViewScreen(name='viewSet'))
 
         return sm
 

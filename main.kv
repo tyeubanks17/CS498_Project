@@ -43,3 +43,11 @@
                     height: '100dp'
                     on_release: 
                         root.delete_csv()
+
+                Button:
+                    size_hint_y: None
+                    text: 'View Sets'
+                    height: '100dp'
+                    on_release:
+                        root.manager.transition.direction = 'right'
+                        root.manager.current = 'viewSet'
