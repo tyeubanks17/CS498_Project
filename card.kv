@@ -1,0 +1,51 @@
+<CorrectButton@MDIconButton>:
+    icon: "check-outline"
+    on_release: self.icon = "check-bold" 
+    
+<WrongButton@MDIconButton>:
+    icon: "close-outline"
+    on_release: self.icon = "close-thick" 
+
+Screen:
+
+    MDCard:
+        orientation: "vertical"
+        padding: "8dp"
+        ripple_behavior: True
+        size_hint: None, None
+        size: "700dp", "400dp"
+        pos_hint: {"center_x": .5, "center_y": .5}
+        on_release: term_label.text, content_label.text = ("Definition", "Definition Content") if term_label.text == "TERM" else ("TERM", "Term CONTENT")
+
+
+        MDLabel:
+            id: term_label
+            text: "TERM"
+            theme_text_color: "Secondary"
+            bold: True
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        MDSeparator:
+            height: "2dp"
+
+        MDLabel:
+            id: content_label
+            text: "Term CONTENT"
+
+        MDSeparator:
+
+        MDBoxLayout:
+            id: box_bottom
+            adaptive_height: True
+            padding: "10dp", 0, 0, 0
+
+            MDLabel:
+                text: "Self Evaluation"
+                size_hint_y: None
+                height: self.texture_size[1]
+                pos_hint: {"center_y": .5}
+                theme_text_color: "Primary"
+
+            CorrectButton:
+            WrongButton:
