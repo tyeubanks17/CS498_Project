@@ -42,8 +42,9 @@ class Metrics:
         return True
         
     def start_study_session(self):
+        self.total_time_spent = 0
         self.start_time = time.time()
-        print("Study session started.")
+        print(f"Study session started at {self.total_time_spent}")
 
     def end_study_session(self):
         if self.start_time is None:

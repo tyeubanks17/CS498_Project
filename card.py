@@ -70,8 +70,7 @@ class CardStudyScreen(MDScreen):
         self.cards = []  # List of {term, definition} dicts
         self.metrics = Metrics()
         self.default_set_path = default_set_path or 'sets/Test Set B - Italian.csv'
-        # Load default set on initialization
-        self.load_study_set(self.default_set_path)
+        # Don't load here - wait for on_enter() to ensure fresh session each time
 
     def load_study_set(self, csv_file_path):
         '''
@@ -161,13 +160,13 @@ class CardStudyScreen(MDScreen):
 
     def on_enter(self):
         '''
-        Called when screen is displayed. Reload default set if no cards loaded yet.
+        Called when screen is displayed. Always reset and reload the study set for a fresh session.
         '''
-        if not self.cards:
-            try:
-                self.load_study_set(self.default_set_path)
-            except Exception as e:
-                print(f"Error loading default set on screen enter: {e}")
+        try:
+            # Always reload to ensure fresh metrics for each session
+            self.load_study_set(self.default_set_path)
+        except Exception as e:
+            print(f"Error loading study set on screen enter: {e}")
 
 
 class MetricsScreen(MDScreen):
