@@ -14,7 +14,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from screens.editscreen import EditScreen
 from screens.viewscreen import ViewScreen
 from metrics import Metrics
-from card import CardStudyScreen
+from card import CardStudyScreen, MetricsScreen
 import fileio
 
 class MenuScreen(Screen):
@@ -46,6 +46,7 @@ class StudyApp(MDApp):
         sm.add_widget(EditScreen(name='editSet'))
         sm.add_widget(ViewScreen(name='viewSet'))
         sm.add_widget(CardStudyScreen(name='cardStudy'))
+        sm.add_widget(MetricsScreen(name='metrics'))
 
         return sm
 
