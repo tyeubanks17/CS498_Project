@@ -51,3 +51,10 @@
                     on_release:
                         root.manager.transition.direction = 'right'
                         root.manager.current = 'viewSet'
+
+                Button:
+                    size_hint_y: None
+                    text: 'Study flashcards'
+                    height: '100dp'
+                    on_release:
+                        root.manager.current = 'cardStudy'
