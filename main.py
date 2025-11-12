@@ -14,7 +14,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from screens.editscreen import EditScreen
 from screens.viewscreen import ViewScreen
 from metrics import Metrics
-from card import CardStudyScreen, MetricsScreen
+from screens.card import CardStudyScreen, MetricsScreen
 import fileio
 
 class MenuScreen(Screen):
