@@ -37,8 +37,6 @@
         RecycleView:
             id: rv
             viewclass: 'SetSelectRow'
-            # data must be assigned from Python; kv parser doesn't accept list comprehensions here.
-            # We'll populate rv.data from the screen's on_pre_enter.
             data: []
             RecycleBoxLayout:
                 default_size: None, dp(48)

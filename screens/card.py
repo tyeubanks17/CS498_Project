@@ -154,6 +154,17 @@ class CardStudyScreen(MDScreen):
         # Navigate to metrics screen
         App.get_running_app().root.current = 'metrics'
 
+    def back_to_menu(self):
+        '''
+        End the study session timer and return to main menu without showing metrics
+        '''
+        # End the session to stop the timer and finalize time tracking
+        self.metrics.end_study_session()
+        # Reset cards so next study session loads fresh
+        self.cards = []
+        # Navigate to menu
+        App.get_running_app().root.current = 'menu' 
+
     def flip_card(self):
         '''
         Flip the current card (delegate to CardWidget)
