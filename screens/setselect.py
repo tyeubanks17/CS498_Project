@@ -1,3 +1,12 @@
+'''
+screens/setselect.py
+
+Screen that lists available CSV sets in the ./sets folder and allows selection.
+
+History:
+12 November 2025 - Created
+'''
+
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ListProperty
