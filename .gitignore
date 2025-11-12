@@ -1,2 +1,3 @@
 __pycache__/
 test.py
+echo ".DS_Store" >> .gitignore
