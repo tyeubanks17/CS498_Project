@@ -15,6 +15,7 @@ from screens.editscreen import EditScreen
 from screens.viewscreen import ViewScreen
 from metrics import Metrics
 from screens.card import CardStudyScreen, MetricsScreen
+from screens.setselect import SetSelectScreen
 import fileio
 
 class MenuScreen(Screen):
@@ -46,6 +47,7 @@ class StudyApp(MDApp):
         sm.add_widget(EditScreen(name='editSet'))
         sm.add_widget(ViewScreen(name='viewSet'))
         sm.add_widget(CardStudyScreen(name='cardStudy'))
+        sm.add_widget(SetSelectScreen(name='setselect'))
         sm.add_widget(MetricsScreen(name='metrics'))
 
         return sm

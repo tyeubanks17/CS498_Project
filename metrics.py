@@ -42,9 +42,15 @@ class Metrics:
         return True
         
     def start_study_session(self):
+        # Only start a new session if one isn't already running.
+        if self.start_time is not None:
+            # Session already started; ignore duplicate starts.
+            return False
+        # Reset total_time_spent for a fresh session
         self.total_time_spent = 0
         self.start_time = time.time()
         print(f"Study session started at {self.total_time_spent}")
+        return True
 
     def end_study_session(self):
         if self.start_time is None:

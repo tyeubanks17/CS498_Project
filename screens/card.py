@@ -19,7 +19,7 @@ from metrics import Metrics
 from set import Set
 
 # Load card KV layout at module level
-Builder.load_file("card.kv")
+Builder.load_file("./screens/card.kv")
 
 
 class CardWidget(BoxLayout):
@@ -77,6 +77,9 @@ class CardStudyScreen(MDScreen):
         Load a study set from a CSV file and reset to first card
         '''
         try:
+            # If this set is already loaded and cards exist, don't reload it.
+            if self.current_set and getattr(self.current_set, 'path', None) == csv_file_path and self.cards:
+                return
             self.current_set = Set.from_file(csv_file_path)
             # Convert _Entry objects to dicts
             self.cards = [{'term': card.term, 'definition': card.definition} 
@@ -163,8 +166,12 @@ class CardStudyScreen(MDScreen):
         Called when screen is displayed. Always reset and reload the study set for a fresh session.
         '''
         try:
-            # Always reload to ensure fresh metrics for each session
-            self.load_study_set(self.default_set_path)
+            # Only load the default set if no cards are already loaded.
+            # When a set is selected from the SetSelectScreen it calls
+            # `card_screen.load_study_set(path)` before switching to this
+            # screen, so we must not overwrite that selection here.
+            if not self.cards:
+                self.load_study_set(self.default_set_path)
         except Exception as e:
             print(f"Error loading study set on screen enter: {e}")
 
