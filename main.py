@@ -8,11 +8,14 @@ History:
 6 November 2025 - Added the set viewer
 '''
 from kivy.lang import Builder
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 from screens.editscreen import EditScreen
 from screens.viewscreen import ViewScreen
+from metrics import Metrics
+from screens.card import CardStudyScreen, MetricsScreen
+from screens.setselect import SetSelectScreen
 import fileio
 
 class MenuScreen(Screen):
@@ -28,18 +31,24 @@ class MenuScreen(Screen):
         fileio.delete_csv()
     
 
-class StudyApp(App):
+class StudyApp(MDApp):
     '''
     StudyApp kivy.app inherited class
     '''
     def build(self): 
+        self.theme_cls.primary_palette = "BlueGray"
+        self.theme_cls.theme_style = "Dark"
         Builder.load_file('main.kv')
         Builder.load_file('widgets.kv')
         Builder.load_file('global-styles.kv')
+        self.metrics_tracker = Metrics()
         sm = ScreenManager()
         sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(EditScreen(name='editSet'))
         sm.add_widget(ViewScreen(name='viewSet'))
+        sm.add_widget(CardStudyScreen(name='cardStudy'))
+        sm.add_widget(SetSelectScreen(name='setselect'))
+        sm.add_widget(MetricsScreen(name='metrics'))
 
         return sm
 

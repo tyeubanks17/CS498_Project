@@ -1,0 +1,185 @@
+#:kivy 2.3
+# Layout file for flashcard study screen
+
+<CardWidget>:
+    orientation: "vertical"
+    padding: "8dp"
+    size_hint: None, None
+    size: "700dp", "400dp"
+    pos_hint: {"center_x": .5, "center_y": .5}
+
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+
+    Label:
+        id: term_label
+        text: "TERM"
+        bold: True
+        size_hint_y: None
+        height: "40dp"
+        padding: "10dp"
+        font_size: "14sp"
+
+    Widget:
+        size_hint_y: None
+        height: "2dp"
+
+    Label:
+        id: content_label
+        text: root.term
+        size_hint_y: 1
+        padding: "10dp"
+        font_size: "18sp"
+
+    Widget:
+        size_hint_y: None
+        height: "2dp"
+
+    BoxLayout:
+        id: box_bottom
+        size_hint_y: None
+        height: "60dp"
+        padding: "10dp"
+        spacing: "10dp"
+        orientation: "horizontal"
+
+        Label:
+            text: "Correct?"
+            size_hint_x: None
+            width: "80dp"
+            font_size: "12sp"
+
+        Button:
+            text: "YES"
+            size_hint_x: 1
+            on_release: 
+                app.root.get_screen('cardStudy').record_answer_correct()
+
+        Button:
+            text: "NO"
+            size_hint_x: 1
+            on_release: 
+                app.root.get_screen('cardStudy').record_answer_incorrect()
+
+<CardStudyScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "10dp"
+        spacing: "10dp"
+
+        # Header with title and navigation
+        BoxLayout:
+            size_hint_y: None
+            height: "50dp"
+            spacing: "10dp"
+
+            Button:
+                text: "Back to Menu"
+                on_release:
+                    root.back_to_menu()
+
+            Label:
+                text: "Card Study"
+                bold: True
+                font_size: "16sp"
+
+            Button:
+                text: "Flip Card"
+                on_release:
+                    root.flip_card()
+
+        # Card display area
+        BoxLayout:
+            size_hint_y: 0.8
+            padding: "20dp"
+
+            CardWidget:
+                id: card_widget
+
+        # Navigation buttons
+        BoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            spacing: "10dp"
+
+            Button:
+                text: "< Previous"
+                on_release:
+                    root.prev_card()
+
+            Button:
+                text: "Next >"
+                on_release:
+                    root.next_card()
+
+            Button:
+                text: "End Session"
+                on_release:
+                    root.end_study_session()
+
+<MetricsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "20dp"
+        spacing: "15dp"
+
+        # Title
+        Label:
+            text: "Study Session Complete!"
+            bold: True
+            font_size: "24sp"
+            size_hint_y: None
+            height: "50dp"
+
+        # Accuracy
+        Label:
+            id: accuracy_label
+            text: "Accuracy: 0%"
+            font_size: "18sp"
+            bold: True
+            size_hint_y: None
+            height: "40dp"
+
+        # Total stats
+        Label:
+            id: total_label
+            text: "Correct: 0 | Incorrect: 0 | Total: 0"
+            font_size: "14sp"
+            size_hint_y: None
+            height: "40dp"
+
+        # Time spent
+        Label:
+            id: time_label
+            text: "Time Spent: 0m 0s"
+            font_size: "14sp"
+            size_hint_y: None
+            height: "40dp"
+
+        # Problem areas
+        ScrollView:
+            size_hint_y: 1
+
+            Label:
+                id: problem_areas_label
+                text: "No problem areas - Great job!"
+                font_size: "12sp"
+                size_hint_y: None
+                height: self.texture_size[1]
+                markup: True
+
+        # Buttons
+        BoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            spacing: "10dp"
+
+            Button:
+                text: "Return to Menu"
+                on_release:
+                    root.return_to_menu()
+

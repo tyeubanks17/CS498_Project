@@ -1,0 +1,47 @@
+#:kivy 2.3
+
+<SetSelectRow@BoxLayout>:
+    index: 0
+    text: ''
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '48dp'
+    padding: '8dp'
+
+    Label:
+        text: root.text
+
+    Button:
+        text: 'Study'
+        size_hint_x: None
+        width: '80dp'
+        on_release: app.root.get_screen('setselect').select_set(root.index)
+
+
+<SetSelectScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            Button:
+                text: 'Back'
+                on_release: app.root.current = 'menu'
+            Label:
+                text: 'Choose a set to study'
+            Widget:
+
+        RecycleView:
+            id: rv
+            viewclass: 'SetSelectRow'
+            data: []
+            RecycleBoxLayout:
+                default_size: None, dp(48)
+                default_size_hint: 1, None
+                orientation: 'vertical'
+                spacing: dp(4)
+                size_hint_y: None
+                height: self.minimum_height

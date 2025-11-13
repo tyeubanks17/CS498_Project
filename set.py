@@ -96,9 +96,11 @@ class Set:
                 # Detect CSV format
                 csvDialect = csv.Sniffer().sniff(f.read(1024))
                 f.seek(0)
-                columnNames = cls._Entry.__slots__
-                csvData = csv.DictReader(f, columnNames, dialect=csvDialect)
-                return cls([row for row in csvData])
+                # Use DictReader without providing fieldnames - it will use the header row
+                csvData = csv.DictReader(f, dialect=csvDialect)
+                # Filter to only include rows that have 'term' and 'definition' keys
+                rows = [row for row in csvData if row.get('term') and row.get('definition')]
+                return cls(path, rows)
         else: 
             raise NotImplementedError(f"Handler for filetype {ext} not yet implemented.")
 
