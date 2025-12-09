@@ -6,6 +6,7 @@ The central manager for our study app.
 History: 
 22 Oct 2025 - Created, add terrible mock menu
 6 November 2025 - Added the set viewer
+9 Dec 2025 - Added AllTimeStatsScreen
 '''
 from kivy.lang import Builder
 from kivymd.app import MDApp
@@ -16,6 +17,7 @@ from screens.viewscreen import ViewScreen
 from metrics import Metrics
 from screens.card import CardStudyScreen, MetricsScreen
 from screens.setselect import SetSelectScreen
+from screens.alltimestats import AllTimeStatsScreen
 import fileio
 
 class MenuScreen(Screen):
@@ -49,6 +51,7 @@ class StudyApp(MDApp):
         sm.add_widget(CardStudyScreen(name='cardStudy'))
         sm.add_widget(SetSelectScreen(name='setselect'))
         sm.add_widget(MetricsScreen(name='metrics'))
+        sm.add_widget(AllTimeStatsScreen(name='alltimestats'))
 
         return sm
 
