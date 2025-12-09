@@ -148,7 +148,17 @@ class CardStudyScreen(MDScreen):
         End the study session and navigate to metrics screen
         '''
         metrics = self.metrics.get_metrics()
-        # Get metrics screen and set the data
+        # Persist session metrics to all-time stats via StatsTracker
+        try:
+            from tracker import StatsTracker
+            tracker = StatsTracker()
+            # Extract set name from path (e.g., "sets/Test Set B - Italian.csv" -> "Test Set B - Italian.csv")
+            set_name = getattr(self.current_set, 'path', 'unknown').split('/')[-1]
+            tracker.update_stats(set_name, metrics)
+        except Exception as e:
+            print(f"Error updating tracker: {e}")
+        
+        # Display session metrics
         metrics_screen = App.get_running_app().root.get_screen('metrics')
         metrics_screen.set_metrics(metrics)
         # Navigate to metrics screen
