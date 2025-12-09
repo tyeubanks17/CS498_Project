@@ -1,0 +1,101 @@
+#:kivy 2.3
+# Layout for all-time statistics screen
+
+<AllTimeStatsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "15dp"
+        spacing: "15dp"
+
+        # Header
+        BoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            spacing: "10dp"
+
+            Button:
+                text: "Back to Menu"
+                on_release:
+                    root.return_to_menu()
+
+            Label:
+                text: "All-Time Statistics"
+                bold: True
+                font_size: "18sp"
+
+            Button:
+                text: "Delete Stats"
+                size_hint_x: None
+                width: "120dp"
+                on_release:
+                    root.delete_all_stats()
+
+        # Overall accuracy
+        BoxLayout:
+            size_hint_y: None
+            height: "50dp"
+            orientation: "horizontal"
+            spacing: "10dp"
+
+            Label:
+                id: overall_label
+                text: root.overall_accuracy_text
+                bold: True
+                font_size: "16sp"
+
+        # Total stats
+        BoxLayout:
+            size_hint_y: None
+            height: "50dp"
+
+            Label:
+                id: total_label
+                text: root.total_stats_text
+                font_size: "14sp"
+
+        # Scrollable content
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "20dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+                # Per-set problem terms
+                BoxLayout:
+                    orientation: "vertical"
+                    spacing: "15dp"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: "10dp"
+
+                    Label:
+                        text: "Problem Areas by Set"
+                        bold: True
+                        font_size: "14sp"
+                        size_hint_y: None
+                        height: "30dp"
+
+                    GridLayout:
+                        cols: 1
+                        spacing: "10dp"
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        canvas.before:
+                            Color:
+                                rgba: 0.15, 0.15, 0.15, 1
+                            Rectangle:
+                                size: self.size
+                                pos: self.pos
+
+                        Label:
+                            id: problem_terms_label
+                            text: root.problem_terms_display
+                            font_size: "12sp"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                            text_size: self.width, None
