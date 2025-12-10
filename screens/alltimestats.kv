@@ -99,3 +99,37 @@
                             size_hint_y: None
                             height: self.texture_size[1]
                             text_size: self.width, None
+
+                # Selector for individual set performance
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: '8dp'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: '10dp'
+
+                    Label:
+                        text: 'Per-Set Term Performance'
+                        bold: True
+                        font_size: '14sp'
+                        size_hint_y: None
+                        height: '30dp'
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: '40dp'
+
+                        Spinner:
+                            id: set_spinner
+                            text: 'Select set'
+                            values: root.sets_list
+                            size_hint_x: 0.6
+                            on_text: root.view_set_stats(self.text)
+
+                    Label:
+                        id: set_terms_label
+                        text: root.set_terms_display
+                        font_size: '12sp'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        text_size: self.width, None

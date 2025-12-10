@@ -28,6 +28,10 @@ class AllTimeStatsScreen(MDScreen):
     problem_terms_display = StringProperty("")  # Formatted text for display
     overall_accuracy_text = StringProperty("Overall Accuracy: 0%")
     total_stats_text = StringProperty("Total Answers: 0 | Correct: 0")
+    sets_list = ListProperty([])  # list of set names for selection
+    selected_set = StringProperty("")
+    set_terms_display = StringProperty("")
+    _allow_spinner_callback = False  # Flag to prevent spinner callback on initial load
 
     def on_enter(self):
         '''
@@ -46,6 +50,8 @@ class AllTimeStatsScreen(MDScreen):
             
             # Get per-set summary and problem terms for each set
             self.sets_summary = tracker.get_all_sets_summary()
+            # Populate selectable set list
+            self.sets_list = [s[0] for s in self.sets_summary]
             
             # Build list of (set_name, problem_terms_list) for display
             sets_with_problems = []
@@ -66,7 +72,10 @@ class AllTimeStatsScreen(MDScreen):
                     display_text += "\n"
                 self.problem_terms_display = display_text
             else:
-                self.problem_terms_display = "No statistics yet. Better start studying!"
+                self.problem_terms_display = "No problem areas found. Keep studying!"
+            
+            # Enable spinner callback after initial setup
+            self._allow_spinner_callback = True
                 
         except Exception as e:
             print(f"Error in AllTimeStatsScreen: {e}")
@@ -92,7 +101,38 @@ class AllTimeStatsScreen(MDScreen):
     def view_set_stats(self, set_name):
         '''
         Navigate to a detailed view of stats for a specific set.
-        (Optional: could create a SetDetailStatsScreen for this)
+        Displays per-term performance for the selected set.
         '''
-        # For now, just print the set name
-        print(f"Viewing details for: {set_name}")
+        # Ignore callback until after on_enter() completes
+        if not self._allow_spinner_callback:
+            return
+        
+        # Ignore if spinner is in default "Select set" state
+        if set_name == "Select set":
+            return
+        
+        try:
+            tracker = StatsTracker()
+            stats = tracker.get_stats(set_name)
+            if not stats:
+                self.set_terms_display = "No data for selected set."
+                return
+
+            # Build per-term performance text (skip metadata)
+            lines = []
+            for term, counts in stats.items():
+                if term == "__metadata__":
+                    continue
+                correct = counts.get("correct", 0)
+                incorrect = counts.get("incorrect", 0)
+                total = correct + incorrect
+                accuracy = (correct / total * 100) if total > 0 else 0
+                lines.append(f"{term}: {correct} correct | {incorrect} incorrect | {accuracy:.1f}%")
+
+            if lines:
+                self.selected_set = set_name
+                self.set_terms_display = "\n".join(lines)
+            else:
+                self.set_terms_display = "No term-level data for this set."
+        except Exception as e:
+            print(f"Error viewing set stats: {e}")
